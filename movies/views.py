@@ -15,12 +15,11 @@ from movies.serializers import (MovieListSerializer,
 
 class MovieListView(APIView):
     """Shows the list of movies"""
-    queryset = Movie.objects.filter(is_draft=False)
     serializer_class = MovieListSerializer
 
     def get(self, request):
-        movies = Movie.objects.filter(is_draft=False)
-        serializer = MovieListSerializer(movies, many=True)
+        queryset = Movie.objects.filter(is_draft=False)
+        serializer = MovieListSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
