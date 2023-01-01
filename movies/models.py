@@ -1,9 +1,13 @@
+from django.conf import settings
 from datetime import date
 
 from django.db import models
 from django.urls import reverse
 
 import uuid
+
+
+User = settings.AUTH_USER_MODEL
 
 
 class Category(models.Model):
@@ -25,6 +29,7 @@ class Actor(models.Model):
     age = models.PositiveSmallIntegerField("age", default=0)
     description = models.TextField("description")
     image = models.ImageField("picture", upload_to="actors/")
+    user = models.ForeignKey(User, default=1, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -101,7 +106,7 @@ class MovieShot(models.Model):
         return self.title
 
 
-class RatingStar(models.Model):
+class Star(models.Model):
     value = models.SmallIntegerField('Value', default=0)
 
     def __str__(self) -> str:
@@ -113,7 +118,7 @@ class Rating(models.Model):
     movie = models.ForeignKey(
         Movie, on_delete=models.CASCADE, verbose_name='Movie', related_name='ratings')
     star = models.ForeignKey(
-        RatingStar, on_delete=models.CASCADE, verbose_name='Star')
+        Star, on_delete=models.CASCADE, verbose_name='Star')
 
     def __str__(self) -> str:
         return f"{self.star} - {self.movie}"

@@ -1,65 +1,38 @@
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.request import Request
 from rest_framework import status
-from rest_framework.parsers import (MultiPartParser, FormParser)
-from django.http import Http404
+from rest_framework import viewsets
 
-from movies.models import Movie, Review
-from movies.serializers import (MovieListSerializer,
-                                MovieDetailSerializer,
+from movies.models import (Actor, Movie,
+                           Review,
+                           Rating,
+                           Star)
+from movies.serializers import (MovieSerializer,
                                 ReviewCreateSerializer,
-                                ReviewSerializer,
                                 CreateRatingSerializer,
-                                CreateRatingStarSerializer)
+                                CreateStarSerializer,
+                                ActorSerializer)
 
 
-class MovieListView(APIView):
-    """Shows the list of movies"""
-    serializer_class = MovieListSerializer
-
-    def get(self, request):
-        queryset = Movie.objects.filter(is_draft=False)
-        serializer = MovieListSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = MovieListSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class MovieViewSet(viewsets.ModelViewSet):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
 
 
-class MovieDetailView(APIView):
-    def get(self, request, pk):
-        movie = Movie.objects.get(id=pk, is_draft=False)
-        serializer = MovieDetailSerializer(movie)
-        return Response(serializer.data)
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewCreateSerializer
 
 
-class ReviewCreateView(APIView):
-    def get(self, request):
-        reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = ReviewCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class CreateStarViewSet(viewsets.ModelViewSet):
+    queryset = Star.objects.all()
+    serializer_class = CreateStarSerializer
 
 
-class AddStarView(APIView):
-    def post(self, request):
-        serializer = CreateRatingStarSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+class ListCreateRatingViewSet(viewsets.ModelViewSet):
+    queryset = Rating.objects.all()
+    serializer_class = CreateRatingSerializer
 
-
-class AddStarRatingView(APIView):
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
@@ -68,11 +41,15 @@ class AddStarRatingView(APIView):
             ip = request.META.get('REMOTE_ADDR')
         return ip
 
-    def post(self, request):
+    def create(self, request: Request, *args, **kwargs):
         serializer = CreateRatingSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save(ip=self.get_client_ip(request))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ListCreateActorViewSet(viewsets.ModelViewSet):
+    queryset = Actor.objects.all()
+    serializer_class = ActorSerializer

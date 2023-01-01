@@ -1,8 +1,10 @@
-from calendar import c
 from rest_framework import serializers
 
-from movies.models import (Movie, Rating, RatingStar,
-                           Review)
+from movies.models import (Movie,
+                           Rating,
+                           Star,
+                           Review,
+                           Actor)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -56,25 +58,25 @@ class Base64ImageField(serializers.ImageField):
         return extension
 
 
-class MovieListSerializer(serializers.ModelSerializer):
+class MovieSerializer(serializers.ModelSerializer):
     """List of movies"""
     poster = Base64ImageField(max_length=None, use_url=True)
+    directors = serializers.SlugRelatedField(
+        slug_field='name', read_only=True, many=True)
 
     class Meta:
         model = Movie
-        fields = ('id', 'title',
-                  'url', 'tagline',
-                  'category', 'poster')
-
-
-class ReviewCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = '__all__'
+        fields = ('id',
+                  'title',
+                  'url',
+                  'tagline',
+                  'category',
+                  'poster',
+                  'directors')
 
 
 class RecursiveSerializer(serializers.Serializer):
-    def to_representation(self, value):
+    def to_representation(self, value):  # value is a review record
         serializer = self.parent.parent.__class__(
             value, context=self.context)
         return serializer.data
@@ -86,52 +88,56 @@ class FilterReviewListSerializer(serializers.ListSerializer):
         return super().to_representation(data)
 
 
+class ReviewCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True)
 
     class Meta:
         list_serializer_class = FilterReviewListSerializer
         model = Review
-        fields = ['id',
+        fields = ('id',
                   'name',
                   'text',
-                  'children']
+                  'children')
 
         def get_related_field(self, model_field):
             return ReviewSerializer()
 
 
-class MovieDetailSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(slug_field='name', read_only=True)
-    directors = serializers.SlugRelatedField(slug_field='name',
-                                             read_only=True, many=True)
-    actors = serializers.SlugRelatedField(slug_field='name',
-                                          read_only=True, many=True)
-    genres = serializers.SlugRelatedField(slug_field='name',
-                                          read_only=True, many=True)
-    reviews = ReviewSerializer(many=True)
-
+class CreateStarSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Movie
-        exclude = ('is_draft',)
-
-
-class CreateRatingStarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RatingStar
+        model = Star
         fields = ('value',)
 
 
 class CreateRatingSerializer(serializers.ModelSerializer):
+    star = serializers.SlugRelatedField(
+        slug_field='value', queryset=Star.objects.all())
+    ip = serializers.CharField(read_only=True)
+
     class Meta:
         model = Rating
         fields = ('star',
-                  'movie')
+                  'movie',
+                  'ip')
 
     def create(self, validated_data: dict):
-        rating = Rating.objects.update_or_create(
+        rating, _ = Rating.objects.update_or_create(
             ip=validated_data.get('ip', None),
             movie=validated_data.get('movie', None),
             defaults={'star': validated_data.get('star')}
         )
         return rating
+
+
+class ActorSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(max_length=None, use_url=True)
+
+    class Meta:
+        model = Actor
+        fields = '__all__'

@@ -1,17 +1,19 @@
 from django.contrib import admin
-from django.utils.safestring import mark_safe
 
 from movies.actions import make_draft
 from movies.models import (Category,
                            Genre,
                            Movie,
-                           MovieShot,
                            Actor,
                            Rating,
-                           RatingStar,
+                           Star,
                            Review)
 from movies.forms import (MovieAdminForm,
-                          ReviewAdminForm)
+                          ReviewAdminForm,
+                          ActorAdminForm)
+
+
+admin.site.register(Star)
 
 
 class ReviewInline(admin.TabularInline):
@@ -73,7 +75,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Actor)
 class ActorAdmin(admin.ModelAdmin):
-    pass
+    form = ActorAdminForm
 
 
 @admin.register(Rating)
