@@ -2,6 +2,8 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework import generics
+from rest_framework import permissions
 
 from movies.models import (Actor, Movie,
                            Review,
@@ -12,6 +14,8 @@ from movies.serializers import (MovieSerializer,
                                 CreateRatingSerializer,
                                 CreateStarSerializer,
                                 ActorSerializer)
+from movies.permissions import (IsAdminOrReadOnly,
+                                IsOwnerOrReadOnly)
 
 
 class MovieViewSet(viewsets.ModelViewSet):
@@ -50,6 +54,16 @@ class ListCreateRatingViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ListCreateActorViewSet(viewsets.ModelViewSet):
+class ActorListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = ActorSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+
+    def get_queryset(self):
+        queryset = Actor.objects.all().order_by('-first_creation_time')
+        return queryset
+
+
+class ActorRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
+    permission_classes = (IsAdminOrReadOnly, IsOwnerOrReadOnly)

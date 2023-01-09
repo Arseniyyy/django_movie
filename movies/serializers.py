@@ -137,6 +137,7 @@ class CreateRatingSerializer(serializers.ModelSerializer):
 
 class ActorSerializer(serializers.ModelSerializer):
     image = Base64ImageField(max_length=None, use_url=True)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Actor

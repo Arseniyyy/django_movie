@@ -1,5 +1,5 @@
 from django.conf import settings
-from datetime import date
+from datetime import date, datetime
 
 from django.db import models
 from django.urls import reverse
@@ -29,7 +29,11 @@ class Actor(models.Model):
     age = models.PositiveSmallIntegerField("age", default=0)
     description = models.TextField("description")
     image = models.ImageField("picture", upload_to="actors/")
-    user = models.ForeignKey(User, default=1, on_delete=models.CASCADE)
+    first_creation_time = models.DateTimeField(
+        auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(
+        User, verbose_name='user who created this actor', default=1, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
