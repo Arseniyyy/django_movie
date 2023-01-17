@@ -1,6 +1,8 @@
 from rest_framework import permissions
 from rest_framework.request import Request
 
+from movies.models import Actor
+
 
 class IsAdminOrReadOnly(permissions.BasePermission):
     """
@@ -19,8 +21,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     Assumes the model instance has an `owner` attribute.
     """
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, obj: Actor):
         if request.method in permissions.SAFE_METHODS:
             return True
-        # print(obj.owner)
-        return obj.owner == request.user
+        return obj.user == request.user

@@ -4,7 +4,8 @@ from movies.models import (Movie,
                            Rating,
                            Star,
                            Review,
-                           Actor)
+                           Actor,
+                           Genre)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -58,11 +59,31 @@ class Base64ImageField(serializers.ImageField):
         return extension
 
 
+class ActorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Actor
+        fields = ('id',)
+
+
 class MovieSerializer(serializers.ModelSerializer):
+    poster = Base64ImageField(max_length=None, use_url=True)
+
+    class Meta:
+        model = Movie
+        fields = ('id',
+                  'title',
+                  'url',
+                  'tagline',
+                  'category',
+                  'poster',
+                  'directors')
+
+
+class MovieListRetrieveSerializer(serializers.ModelSerializer):
     """List of movies"""
     poster = Base64ImageField(max_length=None, use_url=True)
     directors = serializers.SlugRelatedField(
-        slug_field='name', read_only=True, many=True)
+        slug_field='name', many=True, read_only=True)
 
     class Meta:
         model = Movie
@@ -117,7 +138,7 @@ class CreateStarSerializer(serializers.ModelSerializer):
 
 class CreateRatingSerializer(serializers.ModelSerializer):
     star = serializers.SlugRelatedField(
-        slug_field='value', queryset=Star.objects.all())
+        slug_field='value', queryset=Star.objects.all)
     ip = serializers.CharField(read_only=True)
 
     class Meta:
@@ -141,4 +162,10 @@ class ActorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Actor
+        fields = '__all__'
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
         fields = '__all__'
