@@ -1,6 +1,4 @@
 from django.urls import path
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView,)
 
 from movies.views import (ActorListCreateAPIView,
                           ActorRetrieveUpdateDestroyAPIView,
@@ -20,7 +18,4 @@ urlpatterns = [
     path('actor/', ActorListCreateAPIView.as_view()),
     path('actor/<str:pk>/', ActorRetrieveUpdateDestroyAPIView.as_view()),
     path('genre/', GenreListCreateAPIView.as_view()),
-
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

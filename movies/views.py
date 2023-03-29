@@ -80,8 +80,8 @@ class ListCreateRatingViewSet(viewsets.ModelViewSet):
 
 class ActorListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ActorSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    authentication_classes = (JWTAuthentication,)
+    # permission_classes = (IsAdminOrReadOnly,)
+    # authentication_classes = (JWTAuthentication,)
 
     def get_queryset(self):
         queryset = Actor.objects.all().order_by('-first_creation_time')

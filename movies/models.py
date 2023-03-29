@@ -89,7 +89,7 @@ class Movie(models.Model):
     is_draft = models.BooleanField('Is draft', default=False)
 
     def __str__(self) -> str:
-        return self.title
+        return f'{self.title} - {self.year}'
 
     def get_absolute_url(self):
         return reverse('movie_detail', kwargs={"slug": self.url})
