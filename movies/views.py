@@ -5,6 +5,7 @@ from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.permissions import (IsAuthenticated,)
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import AllowAny
 
 from movies.permissions import (IsAdminOrReadOnly,)
 from movies.models import (Actor, Genre, Movie,
@@ -24,6 +25,8 @@ from movies.serializers import (ReviewCreateSerializer,
 class MovieListCreateViewSet(viewsets.ModelViewSet):
     serializer_class = MovieSerializer
     queryset = Movie.objects.filter(is_draft=False).all()
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     def list(self, request, *args, **kwargs):
         queryset = Movie.objects.filter(is_draft=False).all()
@@ -34,8 +37,8 @@ class MovieListCreateViewSet(viewsets.ModelViewSet):
 class MovieRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieListRetrieveSerializer
-    permission_classes = (IsAuthenticated,)
     authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
 
 class ReviewListAPIView(generics.ListCreateAPIView):

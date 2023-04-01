@@ -19,9 +19,6 @@ class Base64ImageField(serializers.ImageField):
     Updated for Django REST framework 3.
     """
 
-    def __init__(self, is_null=False, **kwargs):
-        super().__init__(**kwargs)
-
     def to_internal_value(self, data):
         from django.core.files.base import ContentFile
         import base64
@@ -62,12 +59,6 @@ class Base64ImageField(serializers.ImageField):
         extension = "jpg" if extension == "jpeg" else extension
 
         return extension
-
-
-class ActorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Actor
-        fields = ('id',)
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -162,7 +153,7 @@ class CreateRatingSerializer(serializers.ModelSerializer):
 
 
 class ActorSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(max_length=None, use_url=True)
+    image = Base64ImageField(max_length=None, use_url=True, required=False)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
