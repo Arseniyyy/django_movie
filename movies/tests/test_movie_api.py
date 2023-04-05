@@ -1,7 +1,12 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
+from model_bakery import baker
 
 from movies.models import Movie, Actor
+from movies.tests.factories.factories import (create_movie_factory,
+                                              create_user_factory,
+                                              create_category_factory,
+                                              create_reviews_set)
 from users.models import CustomUser
 from users.tests.test_user_api import CREATE_USER_URL, TOKEN_URL
 
@@ -15,7 +20,7 @@ def create_sample_instance(**params):
 
 
 class MovieAPITest(APITestCase):
-    """Tests the CRUD functions of the model."""
+    """Tests the CRUD functions of the model. Also runs a string representation test."""
 
     def setUp(self) -> None:
         self.email = "test@test.com"
@@ -35,7 +40,7 @@ class MovieAPITest(APITestCase):
         self.actor_response = self.client.post(
             CREATE_ACTOR_URL, actor_payload, HTTP_AUTHORIZATION=self.auth_header)
 
-        movie_payload = {
+        self.movie_payload = {
             "title": "Slumberland",
             "url": "new-url-1",
             "directors": [
@@ -44,8 +49,23 @@ class MovieAPITest(APITestCase):
             "poster": "none"
         }
         self.movie_response = self.client.post(
-            MODEL_URL, movie_payload, HTTP_AUTHORIZATION=self.auth_header)
+            MODEL_URL, self.movie_payload, HTTP_AUTHORIZATION=self.auth_header)
         self.movie_detail_url = f'{MODEL_URL}{self.movie_response.data.get("id")}/'
+
+    def test_string_representation(self):
+        # TODO: this piece of code is repeatable. Rewrite it in a different place, so it can be accessible by other functions
+        user = create_user_factory()
+        category = create_category_factory()
+        movie = create_movie_factory(user, category)
+        self.assertEqual(str(movie), f'{movie.title} - {movie.year}')
+
+    def test_get_absolute_url(self):
+        user = create_user_factory()
+        category = create_category_factory()
+        movie = create_movie_factory(user, category)
+        response = self.client.get(
+            movie.get_absolute_url(), HTTP_AUTHORIZATION=self.auth_header)
+        self.assertEqual(response.status_code, 200)
 
     def test_create_model(self):
         """Tests that a model gets created well."""
@@ -62,8 +82,8 @@ class MovieAPITest(APITestCase):
         payload = {"title": "New name of the movie"}
         response = self.client.patch(
             self.movie_detail_url, payload, HTTP_AUTHORIZATION=self.auth_header)
-        model = response.data
-        self.assertEqual(model.get("title"), payload.get("title"))
+        instance = response.data
+        self.assertEqual(instance.get("title"), payload.get("title"))
 
     def test_delete_model(self):
         response_delete = self.client.delete(

@@ -92,10 +92,7 @@ class Movie(models.Model):
         return f'{self.title} - {self.year}'
 
     def get_absolute_url(self):
-        return reverse('movie_detail', kwargs={"slug": self.url})
-
-    def get_review(self):
-        return self.reviews_set.filter(parent_isnull=True)
+        return reverse('movie-detail', kwargs={"pk": self.id})
 
 
 class MovieShot(models.Model):

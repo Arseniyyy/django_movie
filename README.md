@@ -18,3 +18,23 @@ psql -U postgres
 Next, exit the postgres bash, cd to your project and run `python manage.py migrate`
 
 Now you can change everything in the running container.
+
+## Testing
+
+```
+make test
+```
+
+This will run tests in both users and movies folders.
+
+### How to run with the `coverage` package?
+
+```
+make test-with-coverage
+```
+
+Then run:
+
+```
+make coverage
+```
