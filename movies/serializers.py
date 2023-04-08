@@ -105,13 +105,17 @@ class FilterReviewListSerializer(serializers.ListSerializer):
         return super().to_representation(data)
 
 
-class ReviewCreateSerializer(serializers.ModelSerializer):
+class ReviewCreateUpdateDestroySerializer(serializers.ModelSerializer):
+    """This serializer is used on views that create, update or destroy a single `Review` model."""
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Review
         fields = '__all__'
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """This serializer is only used for list views."""
     children = RecursiveSerializer(many=True)
 
     class Meta:
@@ -120,7 +124,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ('id',
                   'name',
                   'text',
-                  'children')
+                  'children',
+                  'user',
+                  'movie')
 
         def get_related_field(self, model_field):
             return ReviewSerializer()
@@ -133,8 +139,6 @@ class CreateStarSerializer(serializers.ModelSerializer):
 
 
 class CreateRatingSerializer(serializers.ModelSerializer):
-    star = serializers.SlugRelatedField(
-        slug_field='value', queryset=Star.objects.all)
     ip = serializers.CharField(read_only=True)
 
     class Meta:
@@ -144,11 +148,10 @@ class CreateRatingSerializer(serializers.ModelSerializer):
                   'ip')
 
     def create(self, validated_data: dict):
-        rating, _ = Rating.objects.update_or_create(
-            ip=validated_data.get('ip', None),
-            movie=validated_data.get('movie', None),
-            defaults={'star': validated_data.get('star')}
-        )
+        rating, _ = Rating.objects.update_or_create(ip=validated_data.get('ip', None),
+                                                    movie=validated_data.get(
+                                                        'movie', None),
+                                                    defaults={'star': validated_data.get('star')})
         return rating
 
 

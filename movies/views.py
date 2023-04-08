@@ -5,14 +5,12 @@ from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.permissions import (IsAuthenticated,)
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import AllowAny
 
-from movies.permissions import (IsAdminOrReadOnly,)
+from movies.permissions import (IsAdminOrReadOnly,
+                                IsOwnerOrReadOnly)
 from movies.models import (Actor, Genre, Movie,
-                           Review,
-                           Rating,
-                           Star,)
-from movies.serializers import (ReviewCreateSerializer,
+                           Review, Rating, Star,)
+from movies.serializers import (ReviewCreateUpdateDestroySerializer,
                                 CreateRatingSerializer,
                                 CreateStarSerializer,
                                 ActorSerializer,
@@ -29,8 +27,7 @@ class MovieListCreateViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def list(self, request, *args, **kwargs):
-        queryset = Movie.objects.filter(is_draft=False).all()
-        serializer = MovieListRetrieveSerializer(queryset, many=True)
+        serializer = MovieListRetrieveSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
 
@@ -41,18 +38,34 @@ class MovieRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
 
 
-class ReviewListAPIView(generics.ListCreateAPIView):
+class ReviewListCreateAPIView(generics.ListCreateAPIView):
     queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
+    list_serializer_class = ReviewSerializer
+    create_serializer_class = ReviewCreateUpdateDestroySerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JWTAuthentication,)
 
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return self.list_serializer_class
+        if self.request.method == "POST":
+            return self.create_serializer_class
+        else:
+            return self.create_serializer_class
 
-class ReviewCreateAPIView(generics.ListCreateAPIView):
+
+class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
-    serializer_class = ReviewCreateSerializer
-    permission_classes = (IsAuthenticated,)
+    retrieve_serializer_class = ReviewSerializer
+    serializer_class = ReviewCreateUpdateDestroySerializer
+    permission_classes = (IsOwnerOrReadOnly,)
     authentication_classes = (JWTAuthentication,)
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return self.retrieve_serializer_class
+        else:
+            return self.serializer_class
 
 
 class CreateStarViewSet(viewsets.ModelViewSet):
@@ -63,6 +76,8 @@ class CreateStarViewSet(viewsets.ModelViewSet):
 class ListCreateRatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = CreateRatingSerializer
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -76,15 +91,18 @@ class ListCreateRatingViewSet(viewsets.ModelViewSet):
         serializer = CreateRatingSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.save(ip=self.get_client_ip(request))
+            self.perform_create(serializer=serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_create(self, serializer):
+        serializer.save(ip=self.get_client_ip(self.request))
 
 
 class ActorListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ActorSerializer
-    # permission_classes = (IsAdminOrReadOnly,)
-    # authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAdminOrReadOnly,)
+    authentication_classes = (JWTAuthentication,)
 
     def get_queryset(self):
         queryset = Actor.objects.all().order_by('-first_creation_time')

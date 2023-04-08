@@ -1,12 +1,9 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
-from model_bakery import baker
 
-from movies.models import Movie, Actor
+from movies.models import Movie
 from movies.tests.factories.factories import (create_movie_factory,
-                                              create_user_factory,
-                                              create_category_factory,
-                                              create_reviews_set)
+                                              create_user_factory,)
 from users.models import CustomUser
 from users.tests.test_user_api import CREATE_USER_URL, TOKEN_URL
 
@@ -23,8 +20,14 @@ class MovieAPITest(APITestCase):
     """Tests the CRUD functions of the model. Also runs a string representation test."""
 
     def setUp(self) -> None:
+        # TODO: rewrite all the following code using force_authenticate()
         self.email = "test@test.com"
         self.password = "WhoSellsWind205"
+
+        super_user_email = "staff@example.com"
+
+        self.staff_user = CustomUser.objects.create_superuser(
+            email=super_user_email, password=self.password, is_staff=True)
 
         user_payload = {"email": "test@test.com",
                         "password": "WhoSellsWind205"}
@@ -37,6 +40,8 @@ class MovieAPITest(APITestCase):
         self.access_token_response = self.client.post(TOKEN_URL, {"email": user_payload.get('email'),
                                                                   "password": user_payload.get('password')})
         self.auth_header = f'Bearer {self.access_token_response.data.get("access")}'
+
+        self.client.force_authenticate(user=self.staff_user)
         self.actor_response = self.client.post(
             CREATE_ACTOR_URL, actor_payload, HTTP_AUTHORIZATION=self.auth_header)
 
@@ -55,17 +60,20 @@ class MovieAPITest(APITestCase):
     def test_string_representation(self):
         # TODO: this piece of code is repeatable. Rewrite it in a different place, so it can be accessible by other functions
         user = create_user_factory()
-        category = create_category_factory()
-        movie = create_movie_factory(user, category)
+        movie = create_movie_factory(user)
         self.assertEqual(str(movie), f'{movie.title} - {movie.year}')
 
     def test_get_absolute_url(self):
         user = create_user_factory()
-        category = create_category_factory()
-        movie = create_movie_factory(user, category)
+        movie = create_movie_factory(user)
         response = self.client.get(
             movie.get_absolute_url(), HTTP_AUTHORIZATION=self.auth_header)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_model(self):
+        response = self.client.get(
+            MODEL_URL, HTTP_AUTHORIZATION=self.auth_header)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_model(self):
         """Tests that a model gets created well."""

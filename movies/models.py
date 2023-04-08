@@ -1,10 +1,12 @@
 from django.conf import settings
-from datetime import date, datetime
-
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import AnonymousUser
+from datetime import date, datetime
 
 import uuid
+
+from users.models import CustomUser
 
 
 User = settings.AUTH_USER_MODEL
@@ -127,14 +129,15 @@ class Rating(models.Model):
 
 class Review(models.Model):
     "Comments and reviews"
-    email = models.EmailField()
+    # email = models.EmailField()
     name = models.CharField('name', max_length=100)
     text = models.TextField('message', max_length=5000)
     parent = models.ForeignKey('self', verbose_name='parent', related_name='children',
-                               on_delete=models.SET_NULL, blank=True,
-                               null=True)
+                               on_delete=models.SET_NULL, blank=True, null=True)
     movie = models.ForeignKey(
         Movie, verbose_name='movie', related_name='reviews', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        CustomUser, related_name="reviews", on_delete=models.CASCADE, default=1)
 
     def __str__(self) -> str:
         return f"{self.name} - {self.movie}"

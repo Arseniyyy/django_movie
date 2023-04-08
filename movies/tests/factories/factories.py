@@ -15,8 +15,9 @@ from users.models import CustomUser
 #     }
 
 
-def create_user_factory():
-    user = baker.make(CustomUser)
+def create_user_factory(email="test@example.com", password="12345", is_staff=False):
+    user = baker.make(CustomUser, email=email,
+                      password=password, is_staff=is_staff)
     return user
 
 
@@ -30,11 +31,16 @@ def create_reviews_set(movie):
     return reviews
 
 
-def create_movie_factory(user, category):
+def create_review_factory(movie, user):
+    review = baker.make(Review, movie=movie, user=user)
+    return review
+
+
+def create_movie_factory(user):
     """Creates a movie factory with all the relational fields included."""
     actors_set = baker.make(Actor, user=user, _quantity=2)
     movie = baker.make(Movie,
-                       category=category,
+                       #    category=category,
                        actors=actors_set,
                        directors=actors_set)
     return movie

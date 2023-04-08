@@ -1,7 +1,11 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from rest_framework.test import APIClient
 from rest_framework import status
+
+from movies.tests.factories.factories import create_user_factory
+from users.models import CustomUser
 
 
 CREATE_USER_URL = '/auth/users/'
@@ -34,7 +38,7 @@ class UserAPITest(TestCase):
     def create_user(self, **params):
         return get_user_model().objects.create_user(**params)
 
-    def test_movie_str(self):
+    def test_user_str(self):
         "Tests if a user model gets created well with a payload."
         res = self.client.post(CREATE_USER_URL, self.payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
