@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.core.exceptions import ValidationError
 
 from movies.models import (Movie,
                            Rating,
@@ -37,7 +38,7 @@ class Base64ImageField(serializers.ImageField):
             # Try to decode the file. Return validation error if it fails.
             try:
                 decoded_file = base64.b64decode(data)
-            except TypeError:
+            except ValidationError:
                 self.fail('invalid_image')
 
             # Generate file name:
@@ -93,7 +94,8 @@ class MovieListRetrieveSerializer(serializers.ModelSerializer):
 
 
 class RecursiveSerializer(serializers.Serializer):
-    def to_representation(self, value):  # value is a review record
+    # value is a single review record from the database
+    def to_representation(self, value):
         serializer = self.parent.parent.__class__(
             value, context=self.context)
         return serializer.data

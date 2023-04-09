@@ -3,7 +3,8 @@ from rest_framework.request import Request
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework import generics
-from rest_framework.permissions import (IsAuthenticated,)
+from rest_framework.permissions import (IsAuthenticated,
+                                        AllowAny)
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from movies.permissions import (IsAdminOrReadOnly,
@@ -42,7 +43,7 @@ class ReviewListCreateAPIView(generics.ListCreateAPIView):
     queryset = Review.objects.all()
     list_serializer_class = ReviewSerializer
     create_serializer_class = ReviewCreateUpdateDestroySerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     authentication_classes = (JWTAuthentication,)
 
     def get_serializer_class(self):
@@ -114,6 +115,7 @@ class ActorRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ActorSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JWTAuthentication,)
+    lookup_field = 'name'
 
 
 class GenreListCreateAPIView(generics.ListCreateAPIView):

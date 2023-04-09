@@ -41,7 +41,7 @@ class Actor(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('actor_detail', kwargs={"slug": self.name})
+        return reverse('actor-detail', kwargs={"name": self.name})
 
     class Meta:
         verbose_name = "Actor"
@@ -129,7 +129,6 @@ class Rating(models.Model):
 
 class Review(models.Model):
     "Comments and reviews"
-    # email = models.EmailField()
     name = models.CharField('name', max_length=100)
     text = models.TextField('message', max_length=5000)
     parent = models.ForeignKey('self', verbose_name='parent', related_name='children',

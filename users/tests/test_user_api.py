@@ -38,7 +38,11 @@ class UserAPITest(TestCase):
     def create_user(self, **params):
         return get_user_model().objects.create_user(**params)
 
-    def test_user_str(self):
+    def test_str_representation(self):
+        user = create_user_factory()
+        self.assertEqual(str(user), user.email)
+
+    def test_create_user(self):
         "Tests if a user model gets created well with a payload."
         res = self.client.post(CREATE_USER_URL, self.payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)

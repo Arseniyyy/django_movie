@@ -1,7 +1,7 @@
 from model_bakery import baker
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from movies.models import Movie, Actor, Category, Review
+from movies.models import Genre, Movie, Actor, Category, Review, Star, MovieShot, Rating
 from users.models import CustomUser
 
 
@@ -31,8 +31,8 @@ def create_reviews_set(movie):
     return reviews
 
 
-def create_review_factory(movie, user):
-    review = baker.make(Review, movie=movie, user=user)
+def create_review_factory(movie, user, parent=None):
+    review = baker.make(Review, movie=movie, user=user, parent=parent)
     return review
 
 
@@ -40,7 +40,6 @@ def create_movie_factory(user):
     """Creates a movie factory with all the relational fields included."""
     actors_set = baker.make(Actor, user=user, _quantity=2)
     movie = baker.make(Movie,
-                       #    category=category,
                        actors=actors_set,
                        directors=actors_set)
     return movie
@@ -53,3 +52,19 @@ def create_actor_factory():
 
 def create_category_factory():
     return baker.make(Category)
+
+
+def create_star_factory():
+    return baker.make(Star)
+
+
+def create_genre_factory():
+    return baker.make(Genre)
+
+
+def create_movieshot_factory(movie: Movie):
+    return baker.make(MovieShot, movie=movie)
+
+
+def create_rating_factory(movie: Movie, star: Star):
+    return baker.make(Rating, movie=movie, star=star)
