@@ -1,7 +1,6 @@
 from rest_framework.test import APITestCase
 
-from movies.tests.factories.factories import (create_movieshot_factory,
-                                              create_movie_factory,
+from movies.tests.factories.factories import (create_movie_factory,
                                               create_user_factory,
                                               create_rating_factory,
                                               create_star_factory,)

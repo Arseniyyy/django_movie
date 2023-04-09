@@ -1,11 +1,8 @@
-from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
-from rest_framework.test import APIClient
+from rest_framework.test import APITestCase
 from rest_framework import status
 
 from movies.tests.factories.factories import create_user_factory
-from users.models import CustomUser
 
 
 CREATE_USER_URL = '/auth/users/'
@@ -13,9 +10,8 @@ TOKEN_URL = '/auth/jwt/token/'
 REFRESH_TOKEN_URL = '/auth/jwt/token/refresh/'
 
 
-class UserAPITest(TestCase):
+class UserAPITest(APITestCase):
     def setUp(self):
-        self.client = APIClient()
         self.payload = {
             "email": "test@test.com",
             "password": "WhoSellsWind205",
@@ -59,7 +55,7 @@ class UserAPITest(TestCase):
         res = self.client.post(CREATE_USER_URL, self.wrong_payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # check if the user doesn't exist
+        # check if a user instance wasn't created with the wrong payload
         user_exists = get_user_model().objects.filter(
             email=self.wrong_payload['email']
         ).exists()

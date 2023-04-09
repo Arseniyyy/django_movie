@@ -30,7 +30,7 @@ This will run tests in both users and movies folders.
 ### How to run with the `coverage` package?
 
 ```
-make test-with-coverage
+make test-coverage
 ```
 
 Then run:

@@ -1,26 +1,18 @@
-from rest_framework import views, status
-from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.test import APITestCase
-from movies.models import Review
 
 from users.models import CustomUser
-from movies.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from movies.tests.factories.factories import create_user_factory, create_movie_factory, create_review_factory
 
 
 class IsAdminOrReadOnlyTestCase(APITestCase):
     def setUp(self):
-        staf_email = "staff@example.com"
-        user_email = "user@example.com"
-        password = "password"
+        non_staff_email = "test@example1.com"
         self.actor_payload = {"name": "Romeo",
                               "age": 20,
                               "description": "desc"}
-        self.staff_user = CustomUser.objects.create_user(email=staf_email,
-                                                         password=password,
-                                                         is_staff=True)
-        self.non_staff_user = CustomUser.objects.create_user(email=user_email,
-                                                             password=password)
+        self.staff_user = create_user_factory(is_staff=True)
+        self.non_staff_user = create_user_factory(email=non_staff_email)
         self.url = "/api/v1/actor/"
 
     def test_get_request_for_staff_user(self):
@@ -48,11 +40,9 @@ class IsOwnerOrReadOnlyTestCase(APITestCase):
     def setUp(self) -> None:
         owner_email = "user@example.com"
         non_owner_email = "anyone@example.com"
-        password = "password"
-
         self.non_owner = create_user_factory(
-            email=non_owner_email, password=password)
-        self.owner = create_user_factory(email=owner_email, password=password)
+            email=non_owner_email)
+        self.owner = create_user_factory(email=owner_email)
         movie = create_movie_factory(user=self.owner)
         review = create_review_factory(movie, user=self.owner)
         self.url = f'/api/v1/review/{review.pk}/'

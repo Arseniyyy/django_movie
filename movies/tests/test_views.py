@@ -1,13 +1,8 @@
-from socket import inet_aton
-
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from rest_framework import status
-from rest_framework.request import Request
-from movies.models import Rating
 
-from movies.tests.factories.factories import (create_user_factory,
-                                              create_movie_factory,
-                                              create_star_factory,)
+
+from movies.tests.factories.factories import create_user_factory, create_movie_factory, create_star_factory
 from movies.views import ReviewListCreateAPIView, ListCreateRatingViewSet
 
 
@@ -45,15 +40,14 @@ class ReviewListCreateAPIViewAPITest(APITestCase):
 
 
 class ListCreateRatingViewSetAPITest(APITestCase):
-    def setUp(self) -> None:
-        self.view = ListCreateRatingViewSet.as_view({"get": "list",
-                                                     "post": "create"})
+    def setUp(self):
+        self.view = ListCreateRatingViewSet.as_view(
+            {"get": "list", "post": "create"})
         self.url = "/api/v1/rating/"
         self.user = create_user_factory(is_staff=True)
         self.movie = create_movie_factory(user=self.user)
         self.star = create_star_factory()
-        self.payload = {"star": self.star.pk,
-                        "movie": self.movie.pk}
+        self.payload = {"star": self.star.pk, "movie": self.movie.pk}
         self.wrong_payload = {"star": self.star.pk}  # movie key is absent
         self.factory = APIRequestFactory()
 
