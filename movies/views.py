@@ -7,13 +7,14 @@ from rest_framework.permissions import (IsAuthenticated,
                                         AllowAny)
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from movies.services import (get_client_ip,)
 from movies.permissions import (IsAdminOrReadOnly,
                                 IsOwnerOrReadOnly)
 from movies.models import (Actor, Genre, Movie,
                            Review, Rating, Star,)
 from movies.serializers import (ReviewCreateUpdateDestroySerializer,
-                                CreateRatingSerializer,
-                                CreateStarSerializer,
+                                RatingCreateSerializer,
+                                StarCreateSerializer,
                                 ActorSerializer,
                                 GenreSerializer,
                                 ReviewSerializer,
@@ -69,27 +70,19 @@ class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
 
-class CreateStarViewSet(viewsets.ModelViewSet):
+class StarCreateViewSet(viewsets.ModelViewSet):
     queryset = Star.objects.all()
-    serializer_class = CreateStarSerializer
+    serializer_class = StarCreateSerializer
 
 
-class ListCreateRatingViewSet(viewsets.ModelViewSet):
+class RatingListCreateViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
-    serializer_class = CreateRatingSerializer
+    serializer_class = RatingCreateSerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get_client_ip(self, request):
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-        return ip
-
     def create(self, request: Request, *args, **kwargs):
-        serializer = CreateRatingSerializer(data=request.data)
+        serializer = RatingCreateSerializer(data=request.data)
 
         if serializer.is_valid():
             self.perform_create(serializer=serializer)
@@ -97,7 +90,7 @@ class ListCreateRatingViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
-        serializer.save(ip=self.get_client_ip(self.request))
+        serializer.save(ip=get_client_ip(self.request))
 
 
 class ActorListCreateAPIView(generics.ListCreateAPIView):

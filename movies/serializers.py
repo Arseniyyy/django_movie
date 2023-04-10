@@ -1,12 +1,14 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 
-from movies.models import (Movie,
-                           Rating,
-                           Star,
-                           Review,
-                           Actor,
-                           Genre)
+from movies.models import (
+    Movie,
+    Rating,
+    Star,
+    Review,
+    Actor,
+    Genre
+)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -51,7 +53,7 @@ class Base64ImageField(serializers.ImageField):
 
             data = ContentFile(decoded_file, name=complete_file_name)
 
-        return super(Base64ImageField, self).to_internal_value(data)
+        return super().to_internal_value(data)
 
     def get_file_extension(self, file_name, decoded_file):
         import imghdr
@@ -94,7 +96,6 @@ class MovieListRetrieveSerializer(serializers.ModelSerializer):
 
 
 class RecursiveSerializer(serializers.Serializer):
-    # value is a single review record from the database
     def to_representation(self, value):
         serializer = self.parent.parent.__class__(
             value, context=self.context)
@@ -108,7 +109,6 @@ class FilterReviewListSerializer(serializers.ListSerializer):
 
 
 class ReviewCreateUpdateDestroySerializer(serializers.ModelSerializer):
-    """This serializer is used on views that create, update or destroy a single `Review` model."""
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
@@ -117,44 +117,29 @@ class ReviewCreateUpdateDestroySerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    """This serializer is only used for list views."""
     children = RecursiveSerializer(many=True)
 
     class Meta:
         list_serializer_class = FilterReviewListSerializer
         model = Review
-        fields = ('id',
-                  'name',
-                  'text',
-                  'children',
-                  'user',
-                  'movie')
+        fields = ('id', 'name', 'text', 'children', 'user', 'movie')
 
-        def get_related_field(self, model_field):
-            return ReviewSerializer()
+    def get_related_field(self, model_field):
+        return ReviewSerializer()
 
 
-class CreateStarSerializer(serializers.ModelSerializer):
+class StarCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Star
         fields = ('value',)
 
 
-class CreateRatingSerializer(serializers.ModelSerializer):
+class RatingCreateSerializer(serializers.ModelSerializer):
     ip = serializers.CharField(read_only=True)
 
     class Meta:
         model = Rating
-        fields = ('star',
-                  'movie',
-                  'ip')
-
-    def create(self, validated_data: dict):
-        rating, _ = Rating.objects.update_or_create(ip=validated_data.get('ip', None),
-                                                    movie=validated_data.get(
-                                                        'movie', None),
-                                                    defaults={'star': validated_data.get('star')})
-        return rating
+        fields = ('star', 'movie', 'ip')
 
 
 class ActorSerializer(serializers.ModelSerializer):

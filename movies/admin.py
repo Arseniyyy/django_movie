@@ -1,30 +1,22 @@
 from django.contrib import admin
 
 from movies.actions import make_draft
-from movies.models import (Category,
-                           Genre,
-                           Movie,
-                           Actor,
-                           Rating,
-                           Star,
-                           Review)
-from movies.forms import (MovieAdminForm,
-                          ReviewAdminForm,
-                          ActorAdminForm)
+from movies.forms import ActorAdminForm, MovieAdminForm, ReviewAdminForm
+from movies.models import Actor, Category, Genre, Movie, Rating, Review, Star
 
 
 admin.site.register(Star)
 
 
 class ReviewInline(admin.TabularInline):
-    form = ReviewAdminForm
     model = Review
+    form = ReviewAdminForm
     extra = 1
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'url',)
+    list_display = ('id', 'name', 'url')
     list_display_links = ('name',)
 
 
@@ -50,13 +42,13 @@ class MovieAdmin(admin.ModelAdmin):
             'fields': (('year', 'world_premiere', 'country'),)
         }),
         ('Actors', {
-            'fields': (('actors', 'directors', 'genres', 'category'),),
+            'fields': (('actors', 'directors', 'genres', 'category'),)
         }),
         (None, {
             'fields': (('budget', 'fees_in_usa', 'fees_in_world'),)
         }),
         (None, {
-            'fields': (('url'), ('is_draft'))
+            'fields': (('url',), ('is_draft',))
         }),
     )
 

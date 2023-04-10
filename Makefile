@@ -1,26 +1,52 @@
+PYTHON := python
+MANAGE := $(PYTHON) manage.py
+
+.PHONY: makemigrations migrate runserver test test-rating-model test-movie-api test-actor-api test-user-api test-movies-actions test-movies-permissions test-movies-views test-movies-serializers test-custom-user-manager test-coverage coverage
+
 makemigrations:
-	python manage.py makemigrations
+	$(MANAGE) makemigrations
+
 migrate:
-	python manage.py migrate
+	$(MANAGE) migrate
+
 runserver:
-	python manage.py runserver
+	$(MANAGE) runserver
+
 test:
-	python manage.py test
-test-movie-api:
-	python manage.py test movies.tests.test_movie_api
-test-actor-api:
-	python manage.py test movies.tests.test_actor_api
+	$(MANAGE) test
+
 test-user-api:
-	python manage.py test users.tests.test_user_api
-test-actions:
-	python manage.py test movies.tests.test_actions
-test-permissions:
-	python manage.py test movies.tests.test_permissions
-test-views:
-	python manage.py test movies.tests.test_views
+	$(MANAGE) test users.tests.test_user_api
+
+test-movies-actions:
+	$(MANAGE) test movies.tests.test_actions
+
+test-rating-model:
+	$(MANAGE) test movies.tests.test_rating_model
+
+test-movie-api:
+	$(MANAGE) test movies.tests.test_movie_api
+
+test-actor-api:
+	$(MANAGE) test movies.tests.test_actor_api
+
+test-genre-api:
+	$(MANAGE) test movies.tests.test_genre_api
+
+test-movies-permissions:
+	$(MANAGE) test movies.tests.test_permissions
+
+test-movies-views:
+	$(MANAGE) test movies.tests.test_views
+
+test-movies-serializers:
+	$(MANAGE) test movies.tests.serializers.test_serializers
+
 test-custom-user-manager:
-	python manage.py test users.tests.test_custom_user_manager
+	$(MANAGE) test users.tests.test_custom_user_manager
+
 test-coverage:
-	python -m coverage run --omit='*/migrations/*' manage.py test
+	$(PYTHON) -m coverage run --omit='*/migrations/*' manage.py test
+
 coverage:
 	coverage html

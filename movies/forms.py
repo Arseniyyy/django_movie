@@ -1,13 +1,13 @@
 from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
-
-from movies.models import (Movie,
-                           Review,)
+from movies.models import Movie, Review
 
 
 class MovieAdminForm(forms.ModelForm):
-    description = forms.CharField(label='Description',
-                                  widget=CKEditorUploadingWidget())
+    description = forms.CharField(
+        label='Description',
+        widget=CKEditorUploadingWidget()
+    )
 
     class Meta:
         model = Movie
@@ -15,8 +15,10 @@ class MovieAdminForm(forms.ModelForm):
 
 
 class ReviewAdminForm(forms.ModelForm):
-    text = forms.CharField(label='Message',
-                           widget=CKEditorUploadingWidget())
+    text = forms.CharField(
+        label='Message',
+        widget=CKEditorUploadingWidget()
+    )
 
     class Meta:
         model = Review
@@ -24,8 +26,10 @@ class ReviewAdminForm(forms.ModelForm):
 
 
 class ActorAdminForm(forms.ModelForm):
-    description = forms.CharField(label='Description',
-                                  widget=CKEditorUploadingWidget())
+    description = forms.CharField(
+        label='Description',
+        widget=CKEditorUploadingWidget()
+    )
 
     class Meta:
         model = Review

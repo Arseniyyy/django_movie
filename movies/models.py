@@ -1,46 +1,40 @@
+import uuid
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import AnonymousUser
-from datetime import date, datetime
-
-import uuid
+from datetime import date
 
 from users.models import CustomUser
+from movies.abstract_models import CommonInfo
 
 
-User = settings.AUTH_USER_MODEL
-
-
-class Category(models.Model):
-    name = models.CharField("category", max_length=150)
-    description = models.TextField("description")
+class Category(CommonInfo):
     url = models.SlugField(max_length=160, unique=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = "Category"
         verbose_name_plural = "Categories"
 
 
-class Actor(models.Model):
+class Actor(CommonInfo):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField("name", max_length=100)
+    # name = models.CharField("name", max_length=100)
+    # description = models.TextField("description")
     age = models.PositiveSmallIntegerField("age", default=0)
-    description = models.TextField("description")
     image = models.ImageField("picture", upload_to="actors/")
     first_creation_time = models.DateTimeField(
         auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
-        User, verbose_name='user who created this actor', default=1, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, verbose_name='user who created this actor', default=1, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
+        """Gets a url for a specified actor instance."""
         return reverse('actor-detail', kwargs={"name": self.name})
 
     class Meta:
@@ -48,12 +42,10 @@ class Actor(models.Model):
         verbose_name_plural = "Actors"
 
 
-class Genre(models.Model):
-    name = models.CharField('name', max_length=100)
-    description = models.TextField('description')
+class Genre(CommonInfo):
     url = models.SlugField(max_length=160, unique=True)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
 
@@ -90,10 +82,11 @@ class Movie(models.Model):
     url = models.SlugField(max_length=130, unique=True)
     is_draft = models.BooleanField('Is draft', default=False)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f'{self.title} - {self.year}'
 
     def get_absolute_url(self):
+        """Gets a url for a specified movie instance."""
         return reverse('movie-detail', kwargs={"pk": self.id})
 
 
@@ -105,14 +98,14 @@ class MovieShot(models.Model):
     movie = models.ForeignKey(
         Movie, verbose_name='Movie', on_delete=models.CASCADE)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.title
 
 
 class Star(models.Model):
     value = models.SmallIntegerField('Value', default=0)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"{self.value}"
 
 

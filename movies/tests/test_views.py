@@ -1,9 +1,8 @@
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from rest_framework import status
 
-
 from movies.tests.factories.factories import create_user_factory, create_movie_factory, create_star_factory
-from movies.views import ReviewListCreateAPIView, ListCreateRatingViewSet
+from movies.views import ReviewListCreateAPIView, RatingListCreateViewSet
 
 
 class ReviewListCreateAPIViewAPITest(APITestCase):
@@ -11,12 +10,11 @@ class ReviewListCreateAPIViewAPITest(APITestCase):
 
     def setUp(self):
         self.url = "/api/v1/review/"
-        user = create_user_factory(is_staff=True)
-        self.client.force_authenticate(user=user)
+        self.client.force_authenticate(user=create_user_factory(is_staff=True))
 
     def test_get_serializer_class(self):
         """Tests if the right serializer is returned."""
-        # test get request
+        # Test GET request
         view = ReviewListCreateAPIView()
         response_get = self.client.get(self.url)
         view.request = response_get
@@ -24,14 +22,14 @@ class ReviewListCreateAPIViewAPITest(APITestCase):
         serializer_class = view.get_serializer_class()
         self.assertEqual(serializer_class, view.list_serializer_class)
 
-        # test post request
+        # Test POST request
         response_post = self.client.post(self.url)
         view.request = response_post
         view.request.method = "POST"
         serializer_class = view.get_serializer_class()
         self.assertEqual(serializer_class, view.create_serializer_class)
 
-        # test another method for a request, for example, patch
+        # Test another method for a request, for example, PATCH
         response_update = self.client.patch(self.url)
         view.request = response_update
         view.request.method = "PATCH"
@@ -39,9 +37,9 @@ class ReviewListCreateAPIViewAPITest(APITestCase):
         self.assertEqual(serializer_class, view.create_serializer_class)
 
 
-class ListCreateRatingViewSetAPITest(APITestCase):
+class RatingListCreateViewSetAPITest(APITestCase):
     def setUp(self):
-        self.view = ListCreateRatingViewSet.as_view(
+        self.view = RatingListCreateViewSet.as_view(
             {"get": "list", "post": "create"})
         self.url = "/api/v1/rating/"
         self.user = create_user_factory(is_staff=True)
@@ -53,19 +51,19 @@ class ListCreateRatingViewSetAPITest(APITestCase):
 
     def test_get_client_ip(self):
         request = self.factory.post(
-            self.url, self.payload, HTTP_X_FORWARDED_FOR='127.0.0.1')
+            self.url, self.payload, HTTP_X_FORWARDED_FOR="127.0.0.1")
         force_authenticate(request=request, user=self.user)
         response = self.view(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         request = self.factory.post(
-            self.url, self.payload, REMOTE_ADDR='127.0.0.1')
+            self.url, self.payload, REMOTE_ADDR="127.0.0.1")
         force_authenticate(request=request, user=self.user)
         response = self.view(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_rating(self):
-        """Tests if `create` function can return the 400 http status code."""
+        """Tests if `create` function can return the 400 HTTP status code."""
         request = self.factory.post(self.url, self.wrong_payload)
         force_authenticate(request=request, user=self.user)
         response = self.view(request)
