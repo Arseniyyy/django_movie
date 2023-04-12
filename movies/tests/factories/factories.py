@@ -5,44 +5,29 @@ from movies.models import Genre, Movie, Actor, Category, Review, Star, MovieShot
 from users.models import CustomUser
 
 
-# def create_jwt_token_factory(user):
-#     """Creates a jwt token that can be attached to a specific user later."""
-#     refresh = RefreshToken.for_user(user)
-
-#     return {
-#         'refresh': str(refresh),
-#         'access': str(refresh.access_token),
-#     }
-
-
 def create_user_factory(email="test@example.com", password="12345", is_staff=False):
     user = baker.make(CustomUser, email=email,
                       password=password, is_staff=is_staff)
-    return user
 
 
 def create_category_factory():
-    category = baker.make(Category)
-    return category
+    return baker.make(Category)
 
 
 def create_reviews_set(movie):
-    reviews = baker.make(Review, movie=movie, _quantity=2)
-    return reviews
+    return baker.make(Review, movie=movie, _quantity=2)
 
 
 def create_review_factory(movie, user, parent=None):
-    review = baker.make(Review, movie=movie, user=user, parent=parent)
-    return review
+    return baker.make(Review, movie=movie, user=user, parent=parent)
 
 
 def create_movie_factory(user):
     """Creates a movie factory with all the relational fields included."""
     actors_set = baker.make(Actor, user=user, _quantity=2)
-    movie = baker.make(Movie,
-                       actors=actors_set,
-                       directors=actors_set)
-    return movie
+    return baker.make(Movie,
+                      actors=actors_set,
+                      directors=actors_set)
 
 
 def create_actor_factory():

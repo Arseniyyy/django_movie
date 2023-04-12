@@ -5,11 +5,14 @@ from django.conf.urls.static import static
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
+from users.views import ListCreateUserAPIView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('api-auth/', include('rest_framework.urls')),
     path('auth/', include('djoser.urls')),
+    path('auth/users/', ListCreateUserAPIView.as_view()),
     path('auth/jwt/token/', TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
     path('auth/jwt/token/refresh/',

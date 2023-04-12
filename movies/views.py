@@ -7,7 +7,7 @@ from rest_framework.permissions import (IsAuthenticated,
                                         AllowAny)
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from movies.services import (get_client_ip,)
+from movies.services import (get_client_ip, create_rating,)
 from movies.permissions import (IsAdminOrReadOnly,
                                 IsOwnerOrReadOnly)
 from movies.models import (Actor, Genre, Movie,
@@ -23,8 +23,8 @@ from movies.serializers import (ReviewCreateUpdateDestroySerializer,
 
 
 class MovieListCreateViewSet(viewsets.ModelViewSet):
-    serializer_class = MovieSerializer
     queryset = Movie.objects.filter(is_draft=False).all()
+    serializer_class = MovieSerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -82,7 +82,8 @@ class RatingListCreateViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def create(self, request: Request, *args, **kwargs):
-        serializer = RatingCreateSerializer(data=request.data)
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=request.data)
 
         if serializer.is_valid():
             self.perform_create(serializer=serializer)

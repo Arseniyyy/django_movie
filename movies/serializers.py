@@ -9,6 +9,7 @@ from movies.models import (
     Actor,
     Genre
 )
+from movies.services import create_rating
 
 
 class Base64ImageField(serializers.ImageField):
@@ -136,6 +137,9 @@ class StarCreateSerializer(serializers.ModelSerializer):
 
 class RatingCreateSerializer(serializers.ModelSerializer):
     ip = serializers.CharField(read_only=True)
+
+    def create(self, validated_data):
+        return create_rating(**validated_data)
 
     class Meta:
         model = Rating

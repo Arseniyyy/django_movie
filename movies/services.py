@@ -1,4 +1,7 @@
 from rest_framework.request import Request
+from rest_framework.serializers import ModelSerializer
+
+from movies.models import Movie, Rating
 
 
 def get_client_ip(request: Request):
@@ -8,3 +11,11 @@ def get_client_ip(request: Request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+def create_movie(**validated_data):
+    return Movie.objects.create(**validated_data)
+
+
+def create_rating(**validated_data):
+    return Rating.objects.create(**validated_data)

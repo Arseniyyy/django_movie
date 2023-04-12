@@ -35,7 +35,7 @@ PROJECT_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'djoser',
-    'rest_framework.authtoken',
+    # 'rest_framework.authtoken',
     'ckeditor',
     'ckeditor_uploader',
     'rest_framework_simplejwt',

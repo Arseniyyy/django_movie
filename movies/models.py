@@ -20,8 +20,6 @@ class Category(CommonInfo):
 
 class Actor(CommonInfo):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # name = models.CharField("name", max_length=100)
-    # description = models.TextField("description")
     age = models.PositiveSmallIntegerField("age", default=0)
     image = models.ImageField("picture", upload_to="actors/")
     first_creation_time = models.DateTimeField(
@@ -135,5 +133,4 @@ class Review(models.Model):
         return f"{self.name} - {self.movie}"
 
     class Meta:
-        verbose_name = 'Review'
         verbose_name_plural = 'Reviews'
