@@ -4,7 +4,7 @@
 
 ### User authentication and authorization
 
-Implementing user authentication and authorization is important for ensuring that only authorized users can access certain parts of the website, such as creating and editing movie reviews or leaving comments. Use a third-party authentication provider like Google or Facebook.
+Implementing user authentication and authorization is important for ensuring that only authorized users can access certain parts of the website, such as creating and editing movie reviews or leaving comments. Use a third-party authentication provider like Google or Facebook. When the email of a user gets changed, it is needed to verify the new email.
 
 ### Social media integration
 
