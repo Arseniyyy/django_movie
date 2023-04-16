@@ -2,8 +2,9 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from djoser.views import TokenCreateView
 from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView)
+                                            TokenRefreshView,)
 
 from users.views import UserListCreateAPIView, UserRetrieveUpdateDestroyAPIView
 
@@ -11,8 +12,9 @@ from users.views import UserListCreateAPIView, UserRetrieveUpdateDestroyAPIView
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('api-auth/', include('rest_framework.urls')),
-    path('auth/users/', UserListCreateAPIView.as_view()),
+    path('auth/activate/<str:uid>/<str:token>/', TokenCreateView.as_view(), name='activate'),
     path('auth/users/me/', UserRetrieveUpdateDestroyAPIView.as_view()),
+#     path('auth/users/', UserListCreateAPIView.as_view()),
     path('auth/', include('djoser.urls')),
     path('auth/jwt/token/', TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
