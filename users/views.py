@@ -1,52 +1,17 @@
-import os
-
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import action
+from djoser.views import UserViewSet
 from dotenv import load_dotenv
 
-from users.models import CustomUser
-from users.serializers import TokenUserObtainSerializer, UserPatchSerializer, UserRetrieveSerializer
-from users.services import get_access_token
+from users.serializers import UserPatchSerializer, UserRetrieveSerializer
 
 
 load_dotenv()
-
-class UserListCreateAPIView(generics.ListCreateAPIView):
-    queryset = CustomUser.objects.all()
-    list_serializer_class = UserSerializer
-    create_serializer_class = UserCreateSerializer
-    jwt_url = f'{os.getenv("LOCALHOST_URL")}/auth/jwt/token/'
-
-    def get_permissions(self):
-        if self.request.method == "GET":
-            self.permission_classes = (IsAuthenticated,)
-        elif self.request.method == "POST":
-            self.permission_classes = (AllowAny,)
-        return super().get_permissions()
-
-    def get_serializer_class(self):
-        if self.request.method == "GET":
-            return self.list_serializer_class
-        else:
-            return self.create_serializer_class
-
-    def create(self, request, *args, **kwargs):
-        """
-        Creates a user and returns his email, access, and refresh tokens.
-        """
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        data = {'email': request.data['email'], 'password': request.data['password']}
-        token_pair = get_access_token(self.jwt_url, data=data)
-        token_user_data = {**token_pair, 'email': serializer.data['email']}
-        token_pair_serializer = TokenUserObtainSerializer(token_user_data)
-        return Response(token_pair_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class UserRetrieveUpdateDestroyAPIView(APIView):
@@ -74,3 +39,29 @@ class UserRetrieveUpdateDestroyAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+    
+
+class CustomActivationViewSet(UserViewSet):
+    """
+    Verificates a user's email and toggles `is_active` to `True` if has been registered successfully.
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @action('post', detail=False)
+    def activation(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.user
+        user.is_active = True
+        user.save()
+
+        refresh = RefreshToken.for_user(user=user)
+        refresh_token = str(refresh)
+        access_token = str(refresh.access_token)
+        email = user.email
+        response_data = {'email': email,
+                         'access': access_token,
+                         'refresh': refresh_token}
+
+        return Response(response_data, status=status.HTTP_200_OK)
