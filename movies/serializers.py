@@ -80,7 +80,6 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 class MovieListRetrieveSerializer(serializers.ModelSerializer):
-    """List of movies"""
     poster = Base64ImageField(max_length=None, use_url=True)
     directors = serializers.SlugRelatedField(
         slug_field='name', many=True, read_only=True)

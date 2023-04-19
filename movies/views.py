@@ -3,11 +3,11 @@ from rest_framework.request import Request
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework import generics
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import (IsAuthenticated,
                                         AllowAny)
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from movies.services import (get_client_ip, create_rating,)
+from movies.services import (get_client_ip,)
 from movies.permissions import (IsAdminOrReadOnly,
                                 IsOwnerOrReadOnly)
 from movies.models import (Actor, Genre, Movie,
@@ -23,13 +23,19 @@ from movies.serializers import (ReviewCreateUpdateDestroySerializer,
 
 
 class MovieListCreateViewSet(viewsets.ModelViewSet):
-    queryset = Movie.objects.filter(is_draft=False).all()
     serializer_class = MovieSerializer
-    authentication_classes = (JWTAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
+
+    def get_queryset(self):
+        queryset = Movie.objects.filter(is_draft=False).all()
+        search_term = self.request.query_params.get('search', None)
+        if search_term is not None:
+            queryset = queryset.filter(title__icontains=search_term)
+        return queryset
 
     def list(self, request, *args, **kwargs):
-        serializer = MovieListRetrieveSerializer(self.queryset, many=True)
+        queryset = self.get_queryset()
+        serializer = MovieListRetrieveSerializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -37,7 +43,7 @@ class MovieRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieListRetrieveSerializer
     authentication_classes = (JWTAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class ReviewListCreateAPIView(generics.ListCreateAPIView):

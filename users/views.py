@@ -6,6 +6,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
 from djoser.views import UserViewSet
+from djoser.conf import settings
+from djoser.compat import get_user_email
 from dotenv import load_dotenv
 
 from users.serializers import UserPatchSerializer, UserRetrieveSerializer
@@ -27,9 +29,13 @@ class UserRetrieveUpdateDestroyAPIView(APIView):
 
     def get(self, request: Request):
         current_user = request.user
-        data = {**request.data, "id": current_user.pk,}
+        data = {
+            "id": current_user.pk,
+            "email": current_user.email,
+        }
         serializer_class = self.get_serializer_class()
-        serializer = serializer_class(data)
+        serializer = serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request: Request, *args, **kwargs):
@@ -39,7 +45,7 @@ class UserRetrieveUpdateDestroyAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
-    
+
 
 class CustomActivationViewSet(UserViewSet):
     """
@@ -48,7 +54,7 @@ class CustomActivationViewSet(UserViewSet):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    @action('post', detail=False)
+    @action(['post'], detail=False)
     def activation(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -60,8 +66,11 @@ class CustomActivationViewSet(UserViewSet):
         refresh_token = str(refresh)
         access_token = str(refresh.access_token)
         email = user.email
-        response_data = {'email': email,
-                         'access': access_token,
-                         'refresh': refresh_token}
+        response_data = {'email': email, 'access': access_token, 'refresh': refresh_token}
+
+        if settings.SEND_CONFIRMATION_EMAIL:
+            context = {"user": user}
+            to = [get_user_email(user)]
+            settings.EMAIL.confirmation(self.request, context).send(to)
 
         return Response(response_data, status=status.HTTP_200_OK)

@@ -72,10 +72,11 @@ SITE_NAME = "movie-finder"
 # Djoser settings
 DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
-    # "USER_ID_FIELD": "pk",
     "LOGIN_FIELD": "email",
     'USER_CREATE_PASSWORD_RETYPE': True,
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/email-reset/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': '#/password-reset/{uid}/{token}',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'EMAIL': {
         'activation': 'djoser.email.ActivationEmail',

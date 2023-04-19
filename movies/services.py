@@ -1,10 +1,10 @@
 from rest_framework.request import Request
-from rest_framework.serializers import ModelSerializer
 
 from movies.models import Movie, Rating
 
 
 def get_client_ip(request: Request):
+    """Gets the user's ip when logs in."""
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]

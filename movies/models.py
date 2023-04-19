@@ -1,4 +1,5 @@
 import uuid
+
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -33,7 +34,7 @@ class Actor(CommonInfo):
 
     def get_absolute_url(self):
         """Gets a url for a specified actor instance."""
-        return reverse('actor-detail', kwargs={"name": self.name})
+        return reverse('actor_detail', kwargs={"name": self.name})
 
     class Meta:
         verbose_name = "Actor"
@@ -85,7 +86,7 @@ class Movie(models.Model):
 
     def get_absolute_url(self):
         """Gets a url for a specified movie instance."""
-        return reverse('movie-detail', kwargs={"pk": self.id})
+        return reverse('movie_detail', kwargs={"pk": self.id})
 
 
 class MovieShot(models.Model):

@@ -10,11 +10,9 @@ class TokenUserObtainSerializer(serializers.Serializer):
     access = serializers.CharField(max_length=None)
 
 
-class UserRetrieveSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ("id",
-                  "email")
+class UserRetrieveSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    email = serializers.EmailField()
 
 
 class UserPatchSerializer(UserSerializer):
