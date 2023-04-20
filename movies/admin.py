@@ -2,10 +2,7 @@ from django.contrib import admin
 
 from movies.actions import make_draft
 from movies.forms import ActorAdminForm, MovieAdminForm, ReviewAdminForm
-from movies.models import Actor, Category, Genre, Movie, Rating, Review, Star
-
-
-admin.site.register(Star)
+from movies.models import Actor, Category, Genre, Movie, Rating, Review
 
 
 class ReviewInline(admin.TabularInline):

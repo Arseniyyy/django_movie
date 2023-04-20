@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from movies.models import (
     Movie,
     Rating,
-    Star,
     Review,
     Actor,
     Genre
@@ -72,11 +71,13 @@ class MovieSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ('id',
                   'title',
+                  'description',
+                  'year',
                   'url',
                   'tagline',
                   'category',
                   'poster',
-                  'directors')
+                  'directors',)
 
 
 class MovieListRetrieveSerializer(serializers.ModelSerializer):
@@ -88,11 +89,13 @@ class MovieListRetrieveSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ('id',
                   'title',
+                  'description',
+                  'year',
                   'url',
                   'tagline',
                   'category',
                   'poster',
-                  'directors')
+                  'directors',)
 
 
 class RecursiveSerializer(serializers.Serializer):
@@ -126,12 +129,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def get_related_field(self, model_field):
         return ReviewSerializer()
-
-
-class StarCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Star
-        fields = ('value',)
 
 
 class RatingCreateSerializer(serializers.ModelSerializer):
