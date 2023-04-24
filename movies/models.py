@@ -105,7 +105,7 @@ class MovieShot(models.Model):
 class Rating(models.Model):
     ip = models.CharField('IP address', max_length=15)
     movie = models.ForeignKey(
-        Movie, on_delete=models.CASCADE, verbose_name='Movie', related_name='ratings')
+        Movie, verbose_name='Movie', related_name='ratings', on_delete=models.CASCADE)
     star = models.PositiveSmallIntegerField(
         default=1,
         validators=[

@@ -4,19 +4,19 @@
 
 ### User authentication and authorization
 
-Implementing user authentication and authorization is important for ensuring that only authorized users can access certain parts of the website, such as creating and editing movie reviews or leaving comments. Use a third-party authentication provider like Google or Facebook. When the email of a user gets changed, it is needed to verify the new email.
-
-### Social media integration
-
-Integrating social media features into the website can allow users to share their favorite movies, reviews, and comments with their friends on social media platforms. This can help drive traffic to the website and increase its visibility.
+Implementing user authentication and authorization is important for ensuring that only authorized users can access certain parts of the website, such as creating and editing movie reviews or leaving comments. Use a third-party authentication provider like Google or Facebook. When the email of a user gets changed, it is needed to verify the new email. - **Done**
 
 ### Search functionality
 
-Adding search functionality to the website can allow users to easily find specific movies or reviews they are looking for. Implement a search bar on the website that allows users to search by movie title, actor, genre, or other relevant keywords.
+Adding search functionality to the website can allow users to easily find specific movies or reviews they are looking for. Implement a search bar on the website that allows users to search by movie title, actor, genre, or other relevant keywords. - **Done**
 
 ### Advanced filtering options
 
 Implementing advanced filtering options can allow users to quickly sort through a large number of movies and reviews to find the ones that are most relevant to them. Add filters such as release date, rating, genre, language, or director.
+
+### Advanced rating system
+
+Implement a more advanced system that allows users to rate movies on different criteria such as storyline, acting, cinematography.
 
 ### Recommendations and personalized content
 
@@ -37,7 +37,3 @@ If you want to offer premium content such as movie rentals or purchases, integra
 ### Analytics and reporting
 
 Using analytics tools, it is possible to track user behavior on the website and gain insights into how users interact with content. This can help you make data-driven decisions to improve user experience and increase engagement with the website.
-
-## Fixes in the code
-
-- Remove the `Star` model. The possible value for a star of a movie will be from 1 to 5.

@@ -66,6 +66,8 @@ class Base64ImageField(serializers.ImageField):
 
 class MovieSerializer(serializers.ModelSerializer):
     poster = Base64ImageField(max_length=None, use_url=True)
+    rating_user = serializers.BooleanField()
+    average_rating = serializers.IntegerField()
 
     class Meta:
         model = Movie
@@ -77,25 +79,19 @@ class MovieSerializer(serializers.ModelSerializer):
                   'tagline',
                   'category',
                   'poster',
-                  'directors',)
+                  'directors',
+                  'genres',
+                  'rating_user',
+                  'average_rating',)
 
 
-class MovieListRetrieveSerializer(serializers.ModelSerializer):
-    poster = Base64ImageField(max_length=None, use_url=True)
-    directors = serializers.SlugRelatedField(
-        slug_field='name', many=True, read_only=True)
+class ActorListSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(max_length=None, use_url=True, required=False)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        model = Movie
-        fields = ('id',
-                  'title',
-                  'description',
-                  'year',
-                  'url',
-                  'tagline',
-                  'category',
-                  'poster',
-                  'directors',)
+        model = Actor
+        fields = '__all__'
 
 
 class RecursiveSerializer(serializers.Serializer):
@@ -111,14 +107,6 @@ class FilterReviewListSerializer(serializers.ListSerializer):
         return super().to_representation(data)
 
 
-class ReviewCreateUpdateDestroySerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
-    class Meta:
-        model = Review
-        fields = '__all__'
-
-
 class ReviewSerializer(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True)
 
@@ -131,6 +119,26 @@ class ReviewSerializer(serializers.ModelSerializer):
         return ReviewSerializer()
 
 
+class MovieListRetrieveSerializer(serializers.ModelSerializer):
+    poster = Base64ImageField(max_length=None, use_url=True)
+    directors = ActorListSerializer(read_only=True, many=True)
+    actors = ActorListSerializer(read_only=True, many=True)
+    genres = serializers.SlugRelatedField(slug_field='name', read_only=True, many=True)
+    reviews = ReviewSerializer(many=True)
+
+    class Meta:
+        model = Movie
+        exclude = ('is_draft',)
+
+
+class ReviewCreateUpdateDestroySerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
 class RatingCreateSerializer(serializers.ModelSerializer):
     ip = serializers.CharField(read_only=True)
 
@@ -139,16 +147,7 @@ class RatingCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rating
-        fields = ('star', 'movie', 'ip')
-
-
-class ActorSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(max_length=None, use_url=True, required=False)
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
-    class Meta:
-        model = Actor
-        fields = '__all__'
+        fields = ('star', 'movie', 'ip',)
 
 
 class GenreSerializer(serializers.ModelSerializer):

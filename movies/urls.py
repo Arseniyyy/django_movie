@@ -7,12 +7,12 @@ from movies.views import (
     ReviewRetrieveUpdateDestroyAPIView,
     MovieRetrieveUpdateDestroyAPIView,
     MovieListCreateViewSet,
-    RatingListCreateViewSet
+    RatingListCreateViewSet,
 )
 
 movie_list_create_view = MovieListCreateViewSet.as_view({
     'get': 'list',
-    'post': 'create'
+    'post': 'create',
 })
 
 urlpatterns = [
@@ -24,5 +24,6 @@ urlpatterns = [
     path('actor/<str:name>/', ActorRetrieveUpdateDestroyAPIView.as_view(), name='actor_detail'),
     path('genre/', GenreListCreateAPIView.as_view(), name='genre'),
     path('rating/', RatingListCreateViewSet.as_view({'get': 'list',
-                                                    'post': 'create'})),
+                                                     'post': 'create',
+                                                     'patch': 'update'})),
 ]
