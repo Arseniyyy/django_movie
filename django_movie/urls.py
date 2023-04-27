@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView,)
 
 from users.views import UserRetrieveUpdateDestroyAPIView, CustomActivationViewSet
+from django_movie.yasg import urlpatterns as doc_urls
 
 
 urlpatterns = [
@@ -24,6 +25,8 @@ urlpatterns = [
     path('api/v1/', include('movies.urls')),
     # path('rest-auth/', include('rest_auth.urls'))
 ]
+
+urlpatterns += doc_urls
 
 
 if settings.DEBUG:

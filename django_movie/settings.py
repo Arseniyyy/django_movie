@@ -33,12 +33,13 @@ PROJECT_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    'django_filters',
     'rest_framework',
     'djoser',
     'ckeditor',
     'ckeditor_uploader',
     'rest_framework_simplejwt',
-    'django_filters',
+    'drf_yasg'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS

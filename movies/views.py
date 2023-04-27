@@ -1,30 +1,31 @@
-from django.db.models import Q, Count, Sum, F
+from django.db.models import Q, Count, Sum, F, IntegerField, Avg
+from django.db.models.functions import Cast
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
-from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import (IsAuthenticated,
-                                        AllowAny)
+                                        AllowAny,)
 
 from movies.services import get_client_ip
+from movies.filters import MovieFilter, ActorFilter, RatingFilter
 from movies.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from movies.models import Actor, Genre, Movie, Review, Rating
 from movies.serializers import (ReviewCreateUpdateDestroySerializer,
-                                RatingCreateSerializer,
+                                RatingSerializer,
                                 ActorListSerializer,
                                 GenreSerializer,
                                 ReviewSerializer,
                                 MovieListRetrieveSerializer,
-                                MovieSerializer)
+                                MovieSerializer,)
 
 
-class MovieListCreateViewSet(viewsets.ModelViewSet):
+class MovieListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Movie.objects.filter()
     serializer_class = MovieSerializer
-    filter_backends = (DjangoFilterBackend,)
+    filterset_class = MovieFilter
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -44,41 +45,9 @@ class MovieListCreateViewSet(viewsets.ModelViewSet):
         queryset = Movie.objects.filter(is_draft=False).order_by('-id').annotate(
             rating_user=Count('ratings', filter=Q(ratings__ip=get_client_ip(self.request)))
         ).annotate(
-            average_rating=Sum(F('ratings__star')) / Count(F('ratings'))
+            average_rating=Sum(F('ratings__total_rating')) / Count(F('ratings'))
         )
-        # search_query = self.request.query_params.get('q', None)
-        # start_year = self.request.query_params.get('start_year', None)
-        # end_year = self.request.query_params.get('end_year', None)
-
-        # if search_query:
-        #     # check if q is a digit
-        #     if search_query.isdigit():
-        #         search_query = int(search_query)
-        #         queryset = queryset.filter(
-        #             Q(year=search_query) |
-        #             Q(budget=search_query)
-        #         )
-
-        #     # check if q is type of str
-        #     else:
-        #         queryset = queryset.filter(
-        #             Q(title__icontains=search_query) |
-        #             Q(description__icontains=search_query) |
-        #             Q(actors__name__icontains=search_query) |
-        #             Q(directors__name__icontains=search_query) |
-        #             Q(country__icontains=search_query) |
-        #             Q(genres__name__icontains=search_query) |
-        #             Q(category__name__icontains=search_query)
-        #         )
-        # # check if start_year and end_year are not None and filter the previous queryset with new values
-        # if start_year and end_year:
-        #     queryset = queryset.filter(year__range=(start_year, end_year))
         return queryset
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class MovieRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -125,9 +94,10 @@ class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
 
-class RatingListCreateViewSet(viewsets.ModelViewSet):
-    serializer_class = RatingCreateSerializer
+class RatingListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = RatingSerializer
     authentication_classes = (JWTAuthentication,)
+    filterset_class = RatingFilter
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -137,16 +107,20 @@ class RatingListCreateViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
+        """
+        Gets the queryset for this view and counts an average rating for the provided movie.
+        """
+        fields_number = 3
         # queryset is a set of all ratings made by the current user
-        queryset = Rating.objects.filter(ip=get_client_ip(self.request))
-        rating_star_start = self.request.query_params.get('rating_star_start')
-        rating_star_end = self.request.query_params.get('rating_star_end')
-
-        if rating_star_start and rating_star_end:
-            queryset = queryset.filter(star__range=(rating_star_start, rating_star_end))
+        queryset = Rating.objects.filter(ip=get_client_ip(self.request)).annotate(
+            total_rating=(Cast('storyline_rating', output_field=IntegerField()) +
+                          Cast('acting_rating', output_field=IntegerField()) +
+                          Cast('cinematography_rating', output_field=IntegerField())) / fields_number
+        )
+        queryset = self.filter_queryset(queryset=queryset)
         return queryset
 
-    def create(self, request: Request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs):
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(data=request.data)
 
@@ -165,16 +139,15 @@ class RatingRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ActorListCreateAPIView(generics.ListCreateAPIView):
-    """This view is used for printing all actors and creating a new one."""
-
     serializer_class = ActorListSerializer
     authentication_classes = (JWTAuthentication,)
+    filterset_class = ActorFilter
 
     def get_permissions(self):
         if self.request.method == 'GET':
             permission_classes = (AllowAny,)
         else:
-            permission_classes = (IsAuthenticated,)
+            permission_classes = (IsAdminOrReadOnly,)
         return [permission() for permission in permission_classes]
     
     def get_queryset(self):
@@ -197,13 +170,6 @@ class ActorListCreateAPIView(generics.ListCreateAPIView):
             # here we find an actor with the age varying from start_age to end_age
             queryset = queryset.filter(age__range=(start_age, end_age))
         return queryset
-
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            permission_classes = (AllowAny,)
-        else:
-            permission_classes = (IsAdminOrReadOnly,)
-        return [permission() for permission in permission_classes]
 
 
 class ActorRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):

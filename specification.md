@@ -8,15 +8,15 @@ Implementing user authentication and authorization is important for ensuring tha
 
 ### Search functionality
 
-Adding search functionality to the website can allow users to easily find specific movies or reviews they are looking for. Implement a search bar on the website that allows users to search by movie title, actor, genre, or other relevant keywords. - **Done**
+Adding search functionality to the website can allow users to easily find specific movies, reviews (search by star) or actors (search by name and year range) they are looking for. Implement a search bar on the website that allows users to search by movie title, actor, genre, or other relevant keywords. - **Done**
 
 ### Advanced filtering options
 
-Implementing advanced filtering options can allow users to quickly sort through a large number of movies and reviews to find the ones that are most relevant to them. Add filters such as release date, rating, genre, language, or director.
+Implementing advanced filtering options can allow users to quickly sort through a large number of movies and reviews to find the ones that are most relevant to them. Add filters such as release date, rating, genre, language, or director. - **Done**
 
 ### Advanced rating system
 
-Implement a more advanced system that allows users to rate movies on different criteria such as storyline, acting, cinematography.
+Implement a more advanced system that allows users to rate movies on different criteria such as storyline, acting, cinematography. - **Done**
 
 ### Recommendations and personalized content
 

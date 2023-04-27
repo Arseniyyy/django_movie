@@ -66,8 +66,8 @@ class Base64ImageField(serializers.ImageField):
 
 class MovieSerializer(serializers.ModelSerializer):
     poster = Base64ImageField(max_length=None, use_url=True)
-    rating_user = serializers.BooleanField()
-    average_rating = serializers.IntegerField()
+    rating_user = serializers.BooleanField(read_only=True)
+    average_rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Movie
@@ -82,7 +82,8 @@ class MovieSerializer(serializers.ModelSerializer):
                   'directors',
                   'genres',
                   'rating_user',
-                  'average_rating',)
+                  'average_rating',
+                  )
 
 
 class ActorListSerializer(serializers.ModelSerializer):
@@ -139,15 +140,16 @@ class ReviewCreateUpdateDestroySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RatingCreateSerializer(serializers.ModelSerializer):
+class RatingSerializer(serializers.ModelSerializer):
     ip = serializers.CharField(read_only=True)
+    total_rating = serializers.IntegerField(read_only=True)
 
     def create(self, validated_data):
         return create_rating(**validated_data)
 
     class Meta:
         model = Rating
-        fields = ('star', 'movie', 'ip',)
+        fields = '__all__'
 
 
 class GenreSerializer(serializers.ModelSerializer):

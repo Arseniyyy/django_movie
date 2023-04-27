@@ -1,5 +1,6 @@
 import uuid
 
+from django.db.models import F
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
 from django.db import models
@@ -106,13 +107,32 @@ class Rating(models.Model):
     ip = models.CharField('IP address', max_length=15)
     movie = models.ForeignKey(
         Movie, verbose_name='Movie', related_name='ratings', on_delete=models.CASCADE)
-    star = models.PositiveSmallIntegerField(
+    storyline_rating = models.PositiveSmallIntegerField(
         default=1,
         validators=[
             MinValueValidator(1),
             MaxValueValidator(5)
         ]
     )
+    acting_rating = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ]
+    )
+    cinematography_rating = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ]
+    )
+    total_rating = models.FloatField(default=0)
+
+    def save(self, *args, **kwargs):
+        self.total_rating = (F('storyline_rating') + F('acting_rating') + F('cinematography_rating')) / 3
+        super(Rating, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
         return f"{self.star} - {self.movie}"

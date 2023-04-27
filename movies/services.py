@@ -1,19 +1,7 @@
+from django.db.models import F
 from rest_framework.request import Request
-from django_filters import rest_framework as filters
 
 from movies.models import Movie, Rating
-
-
-class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
-    pass
-
-class MovieFilter(filters.FilterSet):
-    genres = CharFilterInFilter(field_name='genres__name', lookup_expr='in')
-    year = filters.RangeFilter()
-
-    class Meta:
-        model = Movie
-        fields = ('genres', 'year',)
 
 
 def get_client_ip(request: Request):
@@ -31,4 +19,6 @@ def create_movie(**validated_data):
 
 
 def create_rating(**validated_data):
-    return Rating.objects.create(**validated_data)
+    total_rating = (F('storyline_rating') + F('acting_rating') + F('cinematography_rating')) / 3
+    print(type(total_rating))
+    return Rating.objects.create(**validated_data, total_rating=total_rating)

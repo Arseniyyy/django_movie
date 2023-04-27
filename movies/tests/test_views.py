@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase, APIRequestFactory, force_authentica
 from rest_framework import status
 
 from movies.tests.factories.factories import create_user_factory, create_movie_factory, create_star_factory
-from movies.views import ReviewListCreateAPIView, RatingListCreateViewSet
+from movies.views import ReviewListCreateAPIView, RatingListCreateAPIView
 
 
 class ReviewListCreateAPIViewAPITest(APITestCase):
@@ -37,9 +37,9 @@ class ReviewListCreateAPIViewAPITest(APITestCase):
         self.assertEqual(serializer_class, view.create_serializer_class)
 
 
-class RatingListCreateViewSetAPITest(APITestCase):
+class RatingListCreateAPIViewAPITest(APITestCase):
     def setUp(self):
-        self.view = RatingListCreateViewSet.as_view(
+        self.view = RatingListCreateAPIView.as_view(
             {"get": "list", "post": "create"})
         self.url = "/api/v1/rating/"
         self.user = create_user_factory(is_staff=True)
