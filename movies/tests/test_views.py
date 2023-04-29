@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from rest_framework import status
 
-from movies.tests.factories.factories import create_user_factory, create_movie_factory, create_star_factory
+from movies.tests.factories.factories import create_user_factory, create_movie_factory
 from movies.views import ReviewListCreateAPIView, RatingListCreateAPIView
 
 
@@ -39,14 +39,17 @@ class ReviewListCreateAPIViewAPITest(APITestCase):
 
 class RatingListCreateAPIViewAPITest(APITestCase):
     def setUp(self):
-        self.view = RatingListCreateAPIView.as_view(
-            {"get": "list", "post": "create"})
+        self.view = RatingListCreateAPIView.as_view()
         self.url = "/api/v1/rating/"
         self.user = create_user_factory(is_staff=True)
         self.movie = create_movie_factory(user=self.user)
-        self.star = create_star_factory()
-        self.payload = {"star": self.star.pk, "movie": self.movie.pk}
-        self.wrong_payload = {"star": self.star.pk}  # movie key is absent
+        self.payload = {
+            "storyline_rating": 1,
+            "acting_rating": 2,
+            "cinematography_rating": 5,
+            "movie": self.movie.pk
+        }
+        self.wrong_payload = {"storyline_rating": 1}  # other fields are absent
         self.factory = APIRequestFactory()
 
     def test_get_client_ip(self):

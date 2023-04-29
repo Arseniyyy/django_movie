@@ -13,6 +13,7 @@ from movies.services import get_client_ip
 from movies.filters import MovieFilter, ActorFilter, RatingFilter
 from movies.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from movies.models import Actor, Genre, Movie, Review, Rating
+from movies.pagination import MovieListCreateAPIViewPagination
 from movies.serializers import (ReviewCreateUpdateDestroySerializer,
                                 RatingSerializer,
                                 ActorListSerializer,
@@ -26,6 +27,7 @@ class MovieListCreateAPIView(generics.ListCreateAPIView):
     queryset = Movie.objects.filter()
     serializer_class = MovieSerializer
     filterset_class = MovieFilter
+    pagination_class = MovieListCreateAPIViewPagination
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -110,13 +112,8 @@ class RatingListCreateAPIView(generics.ListCreateAPIView):
         """
         Gets the queryset for this view and counts an average rating for the provided movie.
         """
-        fields_number = 3
         # queryset is a set of all ratings made by the current user
-        queryset = Rating.objects.filter(ip=get_client_ip(self.request)).annotate(
-            total_rating=(Cast('storyline_rating', output_field=IntegerField()) +
-                          Cast('acting_rating', output_field=IntegerField()) +
-                          Cast('cinematography_rating', output_field=IntegerField())) / fields_number
-        )
+        queryset = Rating.objects.filter(ip=get_client_ip(self.request))
         queryset = self.filter_queryset(queryset=queryset)
         return queryset
 

@@ -19,6 +19,10 @@ def create_movie(**validated_data):
 
 
 def create_rating(**validated_data):
-    total_rating = (F('storyline_rating') + F('acting_rating') + F('cinematography_rating')) / 3
-    print(type(total_rating))
+    storyline_rating = validated_data['storyline_rating']
+    acting_rating = validated_data['acting_rating']
+    cinematography_rating = validated_data['cinematography_rating']
+
+    # total_rating = (F('storyline_rating') + F('acting_rating') + F('cinematography_rating')) / 3
+    total_rating = (storyline_rating + acting_rating + cinematography_rating) / 3
     return Rating.objects.create(**validated_data, total_rating=total_rating)

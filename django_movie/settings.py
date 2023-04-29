@@ -62,6 +62,8 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend'
     ],
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 2
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

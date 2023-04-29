@@ -4,9 +4,8 @@ from rest_framework import status
 from movies.models import Movie
 from movies.tests.factories.factories import (create_movie_factory,
                                               create_user_factory,
-                                              create_actor_factory,)
-from users.models import CustomUser
-from users.tests.test_user_api import CREATE_USER_URL, TOKEN_URL
+                                              create_actor_factory,
+                                              create_genre_factory,)
 
 
 MODEL_URL = "/api/v1/movie/"
@@ -22,11 +21,16 @@ class MovieAPITest(APITestCase):
 
     def setUp(self) -> None:
         actor = create_actor_factory()
+        genre = create_genre_factory()
         self.staff_user = create_user_factory(is_staff=True)
         self.movie_payload = {"title": "Slumberland",
                               "url": "new-url-1",
+                              "description": "default",
                               "directors": [
                                   actor.pk
+                              ],
+                              "genres": [
+                                  genre.pk
                               ],
                               "poster": "none"}
         self.client.force_authenticate(user=self.staff_user)

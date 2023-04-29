@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from rest_framework.test import APITestCase
 from rest_framework import status
 
@@ -73,10 +74,16 @@ class UserAPITest(APITestCase):
 
     def test_refresh_jwt_token_for_user(self):
         """Tests that a refresh token gets created well."""
-        self.client.post(CREATE_USER_URL, self.payload)
-        res = self.client.post(TOKEN_URL, self.payload_without_re_password)
+        # self.client.post(CREATE_USER_URL, self.payload)
+        user = create_user_factory()
+        user.is_active = True
+        user.save()
+        res = self.client.post(TOKEN_URL, {
+            'email': user.email,
+            'password': user.password
+        })
         res = self.client.post(REFRESH_TOKEN_URL, {
-                               'refresh': res.data['refresh']})
+                                'refresh': res.data['refresh']})
 
         self.assertIn('access', res.data)
         self.assertTrue(len(res.data['access']) > 50)

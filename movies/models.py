@@ -131,11 +131,10 @@ class Rating(models.Model):
     total_rating = models.FloatField(default=0)
 
     def save(self, *args, **kwargs):
-        self.total_rating = (F('storyline_rating') + F('acting_rating') + F('cinematography_rating')) / 3
         super(Rating, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return f"{self.star} - {self.movie}"
+        return f"{self.total_rating} - {self.movie}"
 
 
 class Review(models.Model):
