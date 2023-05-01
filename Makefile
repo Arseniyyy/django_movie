@@ -10,10 +10,13 @@ migrate:
 	$(MANAGE) migrate
 
 runserver:
-	$(MANAGE) runserver
+	$(MANAGE) runserver 0.0.0.0:8000
 
 test:
 	$(MANAGE) test
+
+test-refresh-jwt-token-for-user:
+	$(MANAGE) test users.tests.test_user_api.UserAPITest.test_refresh_jwt_token_for_user
 
 test-user-api:
 	$(MANAGE) test users.tests.test_user_api

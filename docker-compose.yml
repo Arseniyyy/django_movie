@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      POSTGRES_DATABSE: movie
+      POSTGRES_NAME: movie
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 9879
+      # POSTGRES_HOST: localhost
+      # POSTGRES_PORT: 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  web:
+    build: .
+    volumes:
+      - .:/django_movie/
+    command: make runserver
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

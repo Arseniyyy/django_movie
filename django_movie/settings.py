@@ -13,6 +13,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
+ENVIRONMENT = os.getenv('ENVIRONMENT')
+
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -76,6 +78,8 @@ EMAIL_PORT = 587
 SITE_NAME = "movie-finder"
 
 # Djoser settings
+# users.tests.activation_email.CustomActivationEmail
+email_activation_class = 'users.tests.activation_email.CustomActivationEmail' if ENVIRONMENT == 'testing' else 'djoser.email.ActivationEmail'
 DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
     "LOGIN_FIELD": "email",
@@ -85,7 +89,7 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password-reset/{uid}/{token}',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'EMAIL': {
-        'activation': 'djoser.email.ActivationEmail',
+        'activation': email_activation_class,
     },
 }
 
@@ -146,14 +150,26 @@ WSGI_APPLICATION = 'django_movie.wsgi.application'
 
 
 # Database settings
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         # 'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME'),
+#         'USER': os.getenv('DB_USER'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST'),
+#         'PORT': os.getenv('DB_PORT')
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT')
+        'HOST': 'db',
+        'PORT': 5432
     }
 }
 
