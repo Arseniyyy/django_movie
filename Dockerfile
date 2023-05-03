@@ -10,6 +10,7 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    gcc \
     apt-utils \
     make \
     postgresql-client && \
@@ -24,8 +25,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+RUN chmod +x entrypoint.sh
+
 # Expose port 8000 to the outside world
 EXPOSE 8000
+
+ENTRYPOINT ["./entrypoint.sh"]
 
 # Run the command to start the Django application
 # CMD ["make", "runserver"]

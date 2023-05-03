@@ -15,9 +15,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 ENVIRONMENT = os.getenv('ENVIRONMENT')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG') or True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split()
 
 # Installed apps
 DJANGO_APPS = [
@@ -162,14 +162,16 @@ WSGI_APPLICATION = 'django_movie.wsgi.application'
 #     }
 # }
 
+db_host = os.getenv('DB_HOST')
+db_host_prod = os.getenv('DB_HOST_PROD')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
+        'NAME': os.getenv('DB_NAME') if ENVIRONMENT == 'testing' else os.getenv('DB_NAME_PROD'),
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': 'db',
-        'PORT': 5432
+        'HOST': db_host if ENVIRONMENT == 'testing' else db_host_prod,
+        'PORT': os.getenv('DB_PORT')
     }
 }
 

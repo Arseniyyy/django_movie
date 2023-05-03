@@ -7,7 +7,7 @@ makemigrations:
 	$(MANAGE) makemigrations
 
 migrate:
-	$(MANAGE) migrate
+	$(MANAGE) migrate $(ARGS)
 
 runserver:
 	$(MANAGE) runserver 0.0.0.0:8000

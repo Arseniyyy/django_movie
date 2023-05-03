@@ -43,7 +43,11 @@ class Base64ImageFieldAPITest(APITestCase):
             self.serializer.run_validation(invalid_image_data)
 
     def test_image_to_base64_conversion(self):
-        path_to_image = os.getenv('PATH_TO_IMAGE')
+        import subprocess
+
+        result = subprocess.run(['pwd'], capture_output=True, text=True)
+        pwd_path = result.stdout.strip()
+        path_to_image = f'{pwd_path}/movies/tests/serializers/images/test_image.png'
         with open(path_to_image, 'rb') as img:
             image_data = img.read()
 
