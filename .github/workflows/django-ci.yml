@@ -34,6 +34,7 @@ jobs:
         echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
         echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
         echo "ENVIRONMENT=${{ secrets.ENVIRONMENT }}" >> .env
+        echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
     - name: Run Tests
       run: |
         make test
