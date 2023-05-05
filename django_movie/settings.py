@@ -167,14 +167,13 @@ WSGI_APPLICATION = 'django_movie.wsgi.application'
 # }
 
 db_host = os.getenv('DB_HOST')
-db_host_prod = os.getenv('DB_HOST_PROD')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME') if ENVIRONMENT == 'testing' else os.getenv('DB_NAME_PROD'),
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': db_host if ENVIRONMENT == 'testing' else db_host_prod,
+        'HOST': db_host if ENVIRONMENT == 'testing' else 'db',
         'PORT': os.getenv('DB_PORT')
     }
 }
