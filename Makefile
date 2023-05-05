@@ -12,6 +12,9 @@ migrate:
 runserver:
 	$(MANAGE) runserver 0.0.0.0:8000
 
+rungunicorn:
+	gunicorn django_movie.wsgi:application --bind 0.0.0.0:8000
+
 test:
 	$(MANAGE) test
 

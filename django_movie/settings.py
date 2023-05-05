@@ -79,7 +79,11 @@ SITE_NAME = "movie-finder"
 
 # Djoser settings
 # users.tests.activation_email.CustomActivationEmail
-email_activation_class = 'users.tests.activation_email.CustomActivationEmail' if ENVIRONMENT == 'testing' else 'djoser.email.ActivationEmail'
+email_activation_class = ''
+if ENVIRONMENT == 'testing':
+    email_activation_class = 'users.tests.activation_email.CustomActivationEmail'
+elif ENVIRONMENT == 'production':
+    email_activation_class = 'djoser.email.ActivationEmail'
 DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
     "LOGIN_FIELD": "email",

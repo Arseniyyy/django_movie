@@ -15,7 +15,7 @@ services:
       - pgdata:/var/lib/postgresql/data/
   web:
     build: .
-    command: sh -c "make migrate ARGS="--noinput" && make runserver"
+    command: sh -c "make migrate && make runserver"
     volumes:
       - .:/django_movie/
     ports:
