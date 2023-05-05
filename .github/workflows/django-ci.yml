@@ -24,6 +24,16 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Create .env file
+      run: |
+        echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+        echo "DB_HOST_PROD=${{ secrets.DB_HOST_PROD }}" >> .env
+        echo "DB_NAME_PROD=${{ secrets.DB_NAME_PROD }}" >> .env
+        echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+        echo "DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }}" >> .env
+        echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
+        echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+        echo "ENVIRONMENT=${{ secrets.ENVIRONMENT }}" >> .env
     - name: Run Tests
       run: |
         make test
