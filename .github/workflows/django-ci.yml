@@ -35,6 +35,17 @@ jobs:
         echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
         echo "ENVIRONMENT=${{ secrets.ENVIRONMENT }}" >> .env
         echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-    - name: Run Tests
+    - name: Install Dependencies
       run: |
-        make test
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Build and run containers
+      uses: docker/compose@v2
+      with:
+        compose-version: '3'
+        compose-file: docker-compose.yml
+        command: up --build
+        --abort-on-container-exit: true
+    - name: Set up Postgres
+      run: |
+        docker compose up --build
