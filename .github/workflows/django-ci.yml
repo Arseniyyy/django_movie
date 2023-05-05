@@ -40,12 +40,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Build and run containers
-      uses: docker/compose@v2
+      uses: isbang/compose-action@v1.4.1
       with:
         compose-version: '3'
         compose-file: docker-compose.yml
-        command: up --build
-        --abort-on-container-exit: true
+        services: |
+          web
+          db
     - name: Set up Postgres
       run: |
         docker compose up --build
