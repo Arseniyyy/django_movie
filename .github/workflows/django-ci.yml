@@ -47,6 +47,6 @@ jobs:
         services: |
           web
           db
-    - name: Set up Postgres
-      run: |
-        docker compose up --build
+    # - name: Set up Postgres
+    #   run: |
+    #     docker compose up --build
