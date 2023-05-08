@@ -2,6 +2,7 @@
 *.py[cod]
 *$py.class
 *.txt
+*.csv
 
 !requirements.txt
 # Django
@@ -47,3 +48,9 @@ __pypackages__/
 .env
 .venv
 *.env
+.env*
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
