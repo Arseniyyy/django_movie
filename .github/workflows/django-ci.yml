@@ -53,8 +53,8 @@ jobs:
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: django-movie
-        environment_name: Django-movie-env
-        version_label: "django-movie-${{ steps.format-time.outputs.replaced }}"
+        application_name: django-movie-python
+        environment_name: Django-movie-python-env
+        version_label: "django-movie-python-${{ steps.format-time.outputs.replaced }}"
         region: us-east-1
         deployment_package: deploy.zip
