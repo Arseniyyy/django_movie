@@ -2,14 +2,13 @@ version: '3'
 
 services:
   web:
-    build:
-      context: .
+    image: arsenydeveloper/django-movie-dev:latest
     command: sh -c "make migrate && make rungunicorn"
     ports:
       - 8000:8000
     volumes:
-      - static_volume:/app/django_movie/static
-      - media_volume:/app/django_movie/media
+      - static-volume:/app/django-movie/static
+      - media-volume:/app/django-movie/media
     env_file:
       - ./.env
     depends_on:
@@ -17,11 +16,11 @@ services:
   db:
     image: postgres:15.2-alpine
     volumes:
-      - dmp_postgres_data:/var/lib/postgresql/data/
+      - dmp-postgres-data:/var/lib/postgresql/data/
     env_file:
       - ./.env.prod.db
 
 volumes:
-  dmp_postgres_data:
-  static_volume:
-  media_volume:
+  dmp-postgres-data:
+  static-volume:
+  media-volume:
