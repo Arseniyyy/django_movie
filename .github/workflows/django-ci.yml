@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -54,8 +58,6 @@ jobs:
         tags: arsenydeveloper/django-movie-dev:latest
     - name: Deploy to ECS
       run: |
-        export AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
-        export AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
         curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
         docker context create ecs --from-env django
         docker context use django
