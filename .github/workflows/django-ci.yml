@@ -6,15 +6,6 @@ on:
   pull_request:
     branches: [ "master" ]
 
-env:
-  AWS_REGION: us-east-1
-  DOCKER_HUB_REPOSITORY: arsenydeveloper/django-movie-dev:latest
-  ECS_SERVICE: django-movie-WebService-tfEy0kmMlgvV
-  ECS_CLUSTER: django-movie
-  ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition
-                                               # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: MY_CONTAINER_NAME
-
 jobs:
   build:
     runs-on: ubuntu-latest
