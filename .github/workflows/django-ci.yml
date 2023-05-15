@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  AWS_REGION: us-east-1
+  DOCKER_HUB_REPOSITORY: arsenydeveloper/django-movie-dev:latest
+  ECS_SERVICE: django-movie-WebService-tfEy0kmMlgvV
+  ECS_CLUSTER: django-movie
+  ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  CONTAINER_NAME: MY_CONTAINER_NAME
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,34 +36,31 @@ jobs:
     - name: Create .env file
       run: |
         echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+
+        echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> .env
+        echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
+
         echo "DB_HOST_PROD=${{ secrets.DB_HOST_PROD }}" >> .env
         echo "DB_NAME_PROD=${{ secrets.DB_NAME_PROD }}" >> .env
+
         echo "DEBUG=${{ secrets.DEBUG }}" >> .env
         echo "DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }}" >> .env
+
         echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
         echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+
         echo "ENVIRONMENT=${{ secrets.ENVIRONMENT }}" >> .env
         echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-    - name: Generate Deployment Package 
-      run: zip -r deploy.zip * -x "**migrations**"
-    - name: Get timestamp
-      uses: gerred/actions/current-time@master
-      id: current-time
-    - name: Run string replace
-      uses: frabert/replace-string-action@master
-      id: format-time
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
       with:
-        pattern: '[:\.]+'
-        string: "${{ steps.current-time.outputs.time }}"
-        replace-with: '-'
-        flags: 'g'
-    - name: Deploy to EB
-      uses: einaregilsson/beanstalk-deploy@v14
-      with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: django-movie-python
-        environment_name: Django-movie-python-env
-        version_label: "django-movie-python-${{ steps.format-time.outputs.replaced }}"
-        region: us-east-1
-        deployment_package: deploy.zip
+        push: true
+        tags: arsenydeveloper/django-movie-dev:latest
+    - name: Deploy to ECS
+      run: |
+        export AWS_ACCESS_KEY=secrets.AWS_ACCESS_KEY
+        export AWS_SECRET_KEY=secrets.AWS_SECRET_KEY
+        curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
+        docker context create ecs django
+        docker context use django
+        docker compose -f docker-compose-prod.yml up
