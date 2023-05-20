@@ -1,5 +1,4 @@
 version: '3'
-x-aws-vpc: 'vpc-0f254cde3874be926'
 
 services:
   web:
