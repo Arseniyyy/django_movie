@@ -56,11 +56,12 @@ jobs:
       with:
         push: true
         tags: arsenydeveloper/django-movie-dev:latest
+    - name: Install the compose-cli
+      run: curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
     - name: Deploy to ECS
       run: |
-        curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
         export AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
         export AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
         docker context create ecs django --from-env
         docker context use django
-        sh -c "docker compose -f docker-compose-prod.yml up"
+        docker compose -f docker-compose-prod.yml up
