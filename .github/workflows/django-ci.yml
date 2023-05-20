@@ -64,4 +64,5 @@ jobs:
         export AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
         docker context create ecs django --from-env
         docker context use django
+        docker compose -f docker-compose-prod.yml build
         docker compose --verbose -f docker-compose-prod.yml up
