@@ -4,6 +4,8 @@
 *.txt
 *.csv
 
+*.json
+
 !requirements.txt
 # Django
 media/
