@@ -4,6 +4,10 @@
 *.txt
 *.csv
 
+nvim-keybindings.md
+
+*.pem
+
 *.json
 
 !requirements.txt

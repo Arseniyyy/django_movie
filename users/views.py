@@ -1,3 +1,5 @@
+import rest_framework
+
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.views import APIView
@@ -5,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
+
 from djoser.views import UserViewSet
 from djoser.conf import settings
 from djoser.compat import get_user_email

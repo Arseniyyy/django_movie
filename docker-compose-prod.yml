@@ -3,6 +3,7 @@ version: '3'
 services:
   web:
     image: arsenydeveloper/django-movie-dev:latest
+    restart: always
     command: sh -c "make migrate && make rungunicorn"
     ports:
       - 8000:8000

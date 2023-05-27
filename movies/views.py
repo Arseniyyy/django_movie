@@ -8,6 +8,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions
 from rest_framework.permissions import (IsAuthenticated,
                                         AllowAny,)
+from rest_framework.renderers import JSONRenderer
 
 from movies.services import get_client_ip
 from movies.filters import MovieFilter, ActorFilter, RatingFilter
@@ -28,6 +29,7 @@ class MovieListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
     filterset_class = MovieFilter
     pagination_class = MovieListCreateAPIViewPagination
+    renderer_classes = (JSONRenderer,)
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -57,6 +59,7 @@ class MovieRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MovieListRetrieveSerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAdminOrReadOnly,)
+    renderer_classes = (JSONRenderer,)
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -72,6 +75,7 @@ class ReviewListCreateAPIView(generics.ListCreateAPIView):
     create_serializer_class = ReviewCreateUpdateDestroySerializer
     permission_classes = (AllowAny,)
     authentication_classes = (JWTAuthentication,)
+    renderer_classes = (JSONRenderer,)
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -88,6 +92,7 @@ class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewCreateUpdateDestroySerializer
     permission_classes = (IsOwnerOrReadOnly,)
     authentication_classes = (JWTAuthentication,)
+    renderer_classes = (JSONRenderer,)
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -100,6 +105,7 @@ class RatingListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = RatingSerializer
     authentication_classes = (JWTAuthentication,)
     filterset_class = RatingFilter
+    renderer_classes = (JSONRenderer,)
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -133,12 +139,14 @@ class RatingListCreateAPIView(generics.ListCreateAPIView):
 class RatingRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewCreateUpdateDestroySerializer
     permission_classes = (IsOwnerOrReadOnly,)
+    renderer_classes = (JSONRenderer,)
 
 
 class ActorListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ActorListSerializer
     authentication_classes = (JWTAuthentication,)
     filterset_class = ActorFilter
+    renderer_classes = (JSONRenderer,)
 
     def get_permissions(self):
         if self.request.method == 'GET':
@@ -175,6 +183,7 @@ class ActorRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (JWTAuthentication,)
     permission_classes = (AllowAny,)
     lookup_field = 'name'
+    renderer_classes = (JSONRenderer,)
 
     def get_permissions(self):
         if self.request.method == 'GET':
@@ -188,6 +197,7 @@ class GenreListCreateAPIView(generics.ListCreateAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     authentication_classes = (JWTAuthentication,)
+    renderer_classes = (JSONRenderer,)
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -202,3 +212,4 @@ class GenreListCreateAPIView(generics.ListCreateAPIView):
         else:
             permission_classes = (IsAdminOrReadOnly,)
         return [permission() for permission in permission_classes]
+

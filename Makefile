@@ -15,6 +15,9 @@ runserver:
 rungunicorn:
 	gunicorn django-movie.wsgi:application --bind 0.0.0.0:8000
 
+collectstatic:
+	$(MANAGE) collectstatic --noinput
+
 test:
 	$(MANAGE) test
 
