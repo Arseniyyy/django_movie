@@ -66,7 +66,7 @@ jobs:
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         port: ${{ secrets.EC2_PORT }}
         source: docker-compose-prod.yml
-        target: /home/ubuntu/docker-compose-prod.yml
+        target: docker-compose-prod.yml
     #- name: SSH into EC2 instance
       #uses: appleboy/ssh-action@master
       #with:
