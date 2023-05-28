@@ -27,7 +27,5 @@ COPY . /app
 COPY Makefile /app
 RUN make collectstatic
 
-RUN ls
-
 # Expose port 8000 to the outside world
 EXPOSE 8000
