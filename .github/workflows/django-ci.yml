@@ -56,8 +56,6 @@ jobs:
       #with:
         #push: true
         #tags: arsenydeveloper/django-movie-dev:latest
-    - name: run ls
-      run: ls
     - name: Transfer docker-compose-prod.yml to EC2
       uses: appleboy/scp-action@master
       with:
@@ -66,7 +64,7 @@ jobs:
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         port: ${{ secrets.EC2_PORT }}
         source: docker-compose-prod.yml
-        target: docker-compose-prod.yml
+        target: /home/ubuntu/app/
     #- name: SSH into EC2 instance
       #uses: appleboy/ssh-action@master
       #with:
