@@ -12,8 +12,6 @@ from .yasg import urlpatterns as doc_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api-auth/', include('rest_framework.urls')),
-    # path('auth/activate/<str:uid>/<str:token>/', TokenCreateView.as_view(), name='activate'),
     path('auth/users/me/', UserRetrieveUpdateDestroyAPIView.as_view(), name='user_me'),
     path('auth/users/activation/',
          CustomActivationViewSet.as_view({'post': 'activation'}), name='user_activation'),
@@ -24,7 +22,6 @@ urlpatterns = [
          TokenRefreshView.as_view(), name='token_refresh'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/v1/', include('movies.urls')),
-    # path('rest-auth/', include('rest_auth.urls'))
 ]
 
 urlpatterns += doc_urls

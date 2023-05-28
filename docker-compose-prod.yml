@@ -25,3 +25,5 @@ volumes:
   dmp-postgres-data:
   static-volume:
   media-volume:
+
+new data

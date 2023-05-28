@@ -56,13 +56,20 @@ jobs:
       with:
         push: true
         tags: arsenydeveloper/django-movie-dev:latest
-    - name: Install the compose-cli
-      run: curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
-    - name: Deploy to ECS
-      run: |
-        export AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
-        export AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
-        docker context create ecs django --from-env
-        docker context use django
-        docker compose -f docker-compose-prod.yml build
-        docker compose --verbose -f docker-compose-prod.yml up
+    - name: Transfer docker-compose.yml to EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_PRIVATE_KEY }}
+        port: ${{ secrets.EC2_PORT }}
+        source: ~/django-movie/docker-compose-prod.yml
+        target: /home/ubuntu/docker-compose-prod.yml
+    #- name: SSH into EC2 instance
+      #uses: appleboy/ssh-action@master
+      #with:
+        #host: ${{ secrets.EC2_HOST}}
+        #username: ${{ secrets.EC2_USERNAME }}
+        #key: ${{ secrets.EC2_PRIVATE_KEY }}
+        #port: ${{ secrets.EC2_PORT }}
+        #script: |
