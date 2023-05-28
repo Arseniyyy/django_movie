@@ -73,4 +73,7 @@ jobs:
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         port: ${{ secrets.EC2_PORT }}
         script: |
-          ls
+          cd app/
+          docker compose -f docker-compose-prod.yml down
+          docker compose -f docker-compose-prod.yml up
+
