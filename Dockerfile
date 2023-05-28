@@ -25,7 +25,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the current directory contents into the container at /app
 COPY . /app
 COPY Makefile /app
-RUN make collectstatic
+# RUN make collectstatic
 
 # Expose port 8000 to the outside world
 EXPOSE 8000
